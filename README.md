@@ -1,20 +1,18 @@
-floodrunner logo here //TODO
+[![FloodRunner](/resources/images/logo.png)](https://floodrunner.dev)
 
-# FloodRunner (make this a link to floodrunner.dev //TODO)
+---
 
 A complete framework for monitoring web applications using Flood Element tests. The framework is designed for Kubernetes and leverages Kubernetes jobs to execute Flood Element tests.
 
--pictures of the homepage and the and results page //TODO
+It allows you to easily take any flood element test and schedule it and then get detailed results on each test run.
+
+---
 
 ## Deploying your own FloodRunner ecosystem
 
 The architecture of the FloodRunner ecosystem is shown below:
 
-##TODO FloodRunner Ecosystem Architecture
-
 ### Connecting to your Kubernetes instance
-
----
 
 #### Connecting to an AKS instance
 
@@ -23,8 +21,6 @@ Connect to your kubernetes instance by running `az aks get-credentials --subscri
 #### Connecting via KubeConfig file
 
 -TODO: Instructions for taking kubeconfig file, I did it manually
-
----
 
 ### Kubernetes deployments
 
@@ -75,19 +71,14 @@ If you choose to use Azure blob storage for storing the Flood Element logs and s
 
 If this is not configured you will receive CORS errors when fetching the resources.
 
-### Other Instructions
+## Contributing
 
-- Start Minikube using `minikube start`
-- Start Minikube tunnel to allow Traefik to setup a local loadbalancer using `minikube tunnel`
-- Push images to minikube cache using `minikube cache add <imageName:imageTag>`
-- Deploy all kubernetes configuration files using `skaffold dev`. You will need to create a traefik-secrets.yml file
-- Deploy initial setup using `skaffold dev -p lis`. Deploys traefik intial along with initial configuration.
-- Deploy MongoDb using `skaffold dev -p mongodb`. Deploys MongoDb
-- Deploy API using `skaffold dev -p api`. Deploys API
-- Generate base64 encoded secrets in Git Bash using `echo <secret> | openssl enc -base64`
-- Retrieve Traefik External IP address by running `kubectl get service traefik`
-- Connect to mongo database by port forwarding using `kubectl port-forward --namespace default svc/mongodb-cluster-ip-service 29019:27017"
+---
 
-## Mischalleneous
+Pull requests and feedback are welcomed.
 
-- Kill all node processes using `taskkill /f /im node.exe`
+## Reporting Issues
+
+---
+
+If you encounter any issues with the framework please [open an issue](https://github.com/FloodRunner/FloodRunner/issues) on the GitHub project.
