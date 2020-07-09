@@ -10,17 +10,11 @@ It allows you to easily take any flood element test and schedule it and then get
 
 ## Deploying your own FloodRunner ecosystem
 
-The architecture of the FloodRunner ecosystem is shown below:
-
 ### Connecting to your Kubernetes instance
 
 #### Connecting to an AKS instance
 
 Connect to your kubernetes instance by running `az aks get-credentials --subscription <Azure Subscription Id> --resource-group <Resource Group> --name <AKS Instance Name>`
-
-#### Connecting via KubeConfig file
-
--TODO: Instructions for taking kubeconfig file, I did it manually
 
 ### Kubernetes deployments
 
@@ -73,12 +67,8 @@ If this is not configured you will receive CORS errors when fetching the resourc
 
 ## Contributing
 
----
-
 Pull requests and feedback are welcomed.
 
 ## Reporting Issues
-
----
 
 If you encounter any issues with the framework please [open an issue](https://github.com/FloodRunner/FloodRunner/issues) on the GitHub project.
