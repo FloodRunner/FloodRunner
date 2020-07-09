@@ -1,0 +1,41 @@
+{
+  "name": "sandboxrunner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=DEV nodemon build/index.js",
+    "build": "rimraf ./build && tsc",
+    "start": "npm run build && node build/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/storage-blob": "^12.1.1",
+    "@flood/element": "^1.2.3-beta.2",
+    "@flood/element-cli": "^1.2.3-beta.2",
+    "amqp-ts": "^1.8.0",
+    "app-root-path": "^3.0.0",
+    "child-process-promise": "^2.2.1",
+    "config": "^3.3.1",
+    "cross-env": "^7.0.2",
+    "directory-tree": "^2.2.4",
+    "file-system": "^2.2.2",
+    "js-yaml": "^3.13.1",
+    "logform": "^2.1.2",
+    "minimist": "^1.2.5",
+    "nodemon": "^2.0.3",
+    "rimraf": "^3.0.2",
+    "serialize-javascript": "^3.0.0",
+    "ts-node": "^8.10.1",
+    "vm2": "^3.9.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/app-root-path": "^1.2.4",
+    "@types/child-process-promise": "^2.2.1",
+    "@types/node": "^13.13.4",
+    "@types/rimraf": "^3.0.0",
+    "typescript": "^3.8.3"
+  }
+}

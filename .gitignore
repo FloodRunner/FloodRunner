@@ -1,0 +1,33 @@
+#ignore node modules
+**/node_modules
+
+#ignore log files generated
+**/SandboxRunner/logs
+
+#ignore tmp files generated from flood element runs
+**/SandboxRunner/tmp
+**/SandboxRunner/floodTests/tmp
+**/SandboxRunner/build/**
+**/SandboxRunner/.env
+**/SandboxRunner/config/default.yml
+**/SandboxRunner/docker-compose.yml
+**/SandboxRunner/src/testScripts/**
+
+#ignore secrets files
+k8s/traefik/traefik-secrets.yml
+k8s/mongodb/mongodb-secrets.yml
+k8s/api/api-secrets.yml
+
+#ignore docker credentials script
+docker-credentials.sh
+docker-config.json
+
+#ignore api config
+api/config/develop.yml
+
+#ignore web env file
+**/web/.env
+**/web/config-local.js
+
+#ignore instructions for internal use
+instructions.txt

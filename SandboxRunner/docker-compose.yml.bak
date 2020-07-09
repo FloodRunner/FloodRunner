@@ -1,0 +1,13 @@
+version: "3"
+services:
+  sandboxrunner:
+    build:
+      context: .
+    environment:
+      - MAX_RETRIES=1
+      - FLOOD_TESTID=<Id of test in azure blob storage>
+      - AZURESTORAGE_ACCOUNTNAME=<azure storage account name>
+      - AZURESTORAGE_ACCESSKEY=<azure storage account access key>
+      - AZURESTORAGE_CONTAINERFOLDERNAME=<azure storage account nested folder name>
+      - RABBITMQ_CONNECTIONSTRING=<rabbitmq connection string>
+      - RABBITMQ_CONNECTIONSTRING=<rabbitmq queue name>

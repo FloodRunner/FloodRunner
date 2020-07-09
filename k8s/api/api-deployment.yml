@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: floodrunner-sandboxrunner
+  labels:
+    name: floodrunner-sandboxrunner
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-service-account
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      serviceAccountName: api-service-account
+      containers:
+        - name: api
+          image: jellydock/floodrunner-api
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - secretRef:
+                name: api-secrets
+            - configMapRef:
+                name: api-config
+      terminationGracePeriodSeconds: 10

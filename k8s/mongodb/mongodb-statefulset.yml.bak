@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mongodb-controller
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+#  namespace: mongo-namespace # Change or remove me
+spec:
+  serviceName: mongo
+  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels: # These labels are used by services to match with your STS make sure these selectors are unique
+      app: mongo
+      component: database
+  template:
+    metadata:
+      labels: # These labels are used by services to match with your STS make sure these selectors are unique
+        app: mongo
+        component: database
+    spec:
+      serviceAccountName: mongodb-controller
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo:3.4.24
+          args: # Feel free to add additional options there but always use the "args" do not override the entry point with "command"
+            - "--replSet"
+            - "floodrunner" # Change This this is the name of your replica set and it will be used in the connection string
+            - "--bind_ip_all"
+          ports:
+            - name: mongo # Open POD port
+              containerPort: 27017
+              protocol: TCP
+          volumeMounts:
+            - name: mongo-pvc # Mount the PVC so that we can have the data outside the POD
+              mountPath: /data/db
+          env:
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-password
+          envFrom:
+            - configMapRef: # Import our config map
+                name: mongo-config
+        - name: mongo-sidecar
+          image: cvallance/mongo-k8s-sidecar
+          env:
+            - name: MONGO_SIDECAR_POD_LABELS # CAUTION: Change this if you change your labels !!!!
+              value: "app=mongo,component=database"
+            - name: KUBERNETES_MONGO_SERVICE_NAME # This tells the sidecar which service you will use to expose pods
+              value: "mongo"
+            #       - name: KUBE_NAMESPACE # CAUTION: Change this or remove this if you change the namespace
+            #         value: "mongo-namespace"
+            - name: MONGODB_USERNAME # Import our user from the config map
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGODB_PASSWORD # Import our password
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-password
+            - name: MONGODB_DATABASE # The mongdb admin database
+              value: admin
+  volumeClaimTemplates: # You can customize the PVC if you need to rely on a faster storage...
+    - metadata:
+        name: mongo-pvc
+        labels:
+          app: mongo
+          component: mongo-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi

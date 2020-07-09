@@ -1,0 +1,34 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rabbitmq-management-route
+  namespace: rabbit
+spec:
+  entryPoints:
+    - rabbitmqmanagement
+  routes:
+    - match: PathPrefix(`/rabbitmq/management`)
+      kind: Rule
+      services:
+        - name: rabbit-rabbitmq
+          port: 15672
+      middlewares:
+        - name: rabbit-management-stripprefix
+  tls:
+    certResolver: le
+    domains:
+      - main: floodrunner.dev
+        sans:
+          - "*.floodrunner.dev"
+---
+#Strip prefix
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: rabbit-management-stripprefix
+  namespace: rabbit
+spec:
+  stripPrefix:
+    prefixes:
+      - /rabbitmq/management
+      - /rabbitmq/management/

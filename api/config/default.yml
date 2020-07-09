@@ -1,0 +1,15 @@
+mongodb:
+  host: 'localhost'
+  user: 'jbird'
+  port: 27017
+  jobDatabaseName: 'agenda'
+  jobCollectionName: 'jobs'
+  floodDatabaseName: 'flood'
+
+server:
+  port: 5001
+  fileServiceStrategy: 'AZURE'
+
+auth:
+  domain: 'javaadpatel.eu.auth0.com'
+  audience: 'floodrunnerapi'

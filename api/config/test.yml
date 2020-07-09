@@ -1,0 +1,13 @@
+#mock config settings used for testing
+mongodb:
+  host: 'test'
+  user: 'test'
+  password: 'test'
+
+rabbitMq:
+  connectionString: 'test'
+  elementQueueName: 'test'
+
+azureStorage:
+  accountName: 'test'
+  accessKey: 'test'

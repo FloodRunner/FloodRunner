@@ -1,0 +1,21 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web-route
+  namespace: default
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`app.floodrunner.dev`)
+      kind: Rule
+      services:
+        - name: web-cluster-ip-service
+          port: 80
+  tls:
+    certResolver: le
+    domains:
+      - main: floodrunner.dev
+        sans:
+          - "*.floodrunner.dev"

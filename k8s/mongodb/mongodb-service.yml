@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo # The name is important as it will be part of the URL to access your mongo instance
+  #namespace: mongo-namespace # Change or remove me
+  labels:
+    app: mongo
+    component: database-service
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  clusterIP: None
+  selector: # If you've changed your selectors make sure to change them also here !
+    app: mongo
+    component: database

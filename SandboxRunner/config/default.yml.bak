@@ -1,0 +1,10 @@
+flood:
+  testId: <testId>
+
+azure-storage:
+  accountName: <accountName>
+  accessKey: <accessKey>
+
+rabbitmq:
+  connectionString: <connectionString>
+  queueName: <queueName>

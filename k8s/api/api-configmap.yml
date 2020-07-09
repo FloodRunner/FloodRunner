@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+#  namespace: api
+data:
+  MONGODB_PORT: "27017"
+  #name of job database (eg. Agenda database)
+  MONGODB_JOB_DATABASE: "flood" 
+  #name of job database collection (eg. Agenda database collection)
+  MONGODB_JOB_COLLECTION: "jobs"
+  #name of flood database
+  MONGODB_FLOOD_DATABASE: "flood"
+  RABBITMQ_ELEMENTQUEUENAME: "floodelementQueue"
+  AZURESTORAGE_ACCOUNTNAME: "floodstorage"
+  AUTH_DOMAIN: "javaadpatel.eu.auth0.com"
+  AUTH_AUDIENCE: "floodrunnerapi"
