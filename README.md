@@ -27,8 +27,6 @@ The process of using FloodRunner is simple and easy:
 
 ## Index
 
----
-
 - [Quickstart](#quickstart)
 - [Deploying FloodRunner](#deploying-floodrunner)
   - [1. Deploying Traefik](#1-deploying-traefik)
@@ -37,16 +35,10 @@ The process of using FloodRunner is simple and easy:
   - [4. Deploying FloodRunner NestJs API](#4-deploying-floodrunner-nestjs-api)
     - [4.1 Setting up Azure Blob Storage](#4.1-setting-up-azure-blob-storage)
   - [5. Deploying FloodRunner React Web App](#5-deploying-floodRunner-react-web-app)
-- [About](#about)
-  - [What can I do with it?](#what-can-i-do-with-it)
-- [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [Reporting Issues](#reporting-issues)
-- [Authors](#authors)
 
 ## Quickstart
-
----
 
 Once your FloodRunner instance is up and running you will be able to login and should be presented with a overview page like this:
 
@@ -65,8 +57,6 @@ Click `View Results` to see detailed results of your test executions. Here you c
 ![FloodRunner Results Page](/resources/images/usage/results_page.png)
 
 ## Deploying FloodRunner
-
----
 
 FloodRunner is fully cloud native and can be deployed into any Kubernetes environment. The architecture is shown below
 
