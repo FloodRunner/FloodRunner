@@ -6,12 +6,17 @@ metadata:
 data:
   MONGODB_PORT: "27017"
   #name of job database (eg. Agenda database)
-  MONGODB_JOB_DATABASE: "flood" 
+  MONGODB_JOB_DATABASE: "flood"
   #name of job database collection (eg. Agenda database collection)
   MONGODB_JOB_COLLECTION: "jobs"
   #name of flood database
   MONGODB_FLOOD_DATABASE: "flood"
   RABBITMQ_ELEMENTQUEUENAME: "floodelementQueue"
+  #name of the azure blob storage resource
   AZURESTORAGE_ACCOUNTNAME: "floodstorage"
+  #Auth0 domain
   AUTH_DOMAIN: "javaadpatel.eu.auth0.com"
+  #Auth0 audience (used to secure api)
   AUTH_AUDIENCE: "floodrunnerapi"
+  #Storage provider selection (allowed values: 'AZURE', 'LOCAL')
+  FILE_SERVICE_STRATEGY: "AZURE"

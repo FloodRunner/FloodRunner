@@ -5,4 +5,3 @@ metadata:
   #namespace: mongo-namespace # Change this
 data:
   MONGO_INITDB_ROOT_USERNAME: jbird # Change this
-  # MONGO_INITDB_DATABASE: mydb # Change this
