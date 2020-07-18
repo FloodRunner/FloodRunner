@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserRepository } from './repositories/user.repository';
@@ -7,6 +7,7 @@ import { User, UserSchema } from './repositories/schemas/user.schema';
 
 @Module({
   imports: [
+    HttpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([
       {
