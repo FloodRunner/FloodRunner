@@ -20,3 +20,5 @@ data:
   AUTH_AUDIENCE: "floodrunnerapi"
   #Storage provider selection (allowed values: 'AZURE', 'LOCAL')
   FILE_SERVICE_STRATEGY: "AZURE"
+  #maximum number of screenshots that a test can take
+  FLOOD_MAXALLOWEDSCREENSHOTS: "10"

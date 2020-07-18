@@ -86,6 +86,7 @@ export class FloodRunnerProvider extends Component<{}, IState> {
         `/floodtest/results/${testId}`
       );
       const floodTestResultSummaries = response.data;
+      console.log(floodTestResultSummaries);
       return floodTestResultSummaries;
     } catch (err) {
       console.error(err);
