@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "^12.1.1",
-    "@flood/element": "^1.2.3-beta.2",
-    "@flood/element-cli": "^1.2.3-beta.2",
+    "@flood/element": "^1.2.3",
+    "@flood/element-cli": "^1.2.3",
     "amqp-ts": "^1.8.0",
     "app-root-path": "^3.0.0",
     "child-process-promise": "^2.2.1",
