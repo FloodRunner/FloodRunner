@@ -49,4 +49,8 @@ export class Keys {
   static auth_domain = process.env.AUTH_DOMAIN || config.get('auth.domain');
   static auth_audience =
     process.env.AUTH_AUDIENCE || config.get('auth.audience');
+
+  static flood_maximumAllowedScreenshots =
+    process.env.FLOOD_MAXALLOWEDSCREENSHOTS ||
+    config.get('flood.maximumAllowedScreenshots');
 }

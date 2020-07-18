@@ -50,6 +50,10 @@ export class FloodTestJobService {
         tokenValue: testId,
       },
       {
+        token: '__FLOOD_MAXALLOWEDSCREENSHOTS__',
+        tokenValue: Keys.flood_maximumAllowedScreenshots,
+      },
+      {
         token: '__AZURESTORAGE_ACCOUNTNAME__',
         tokenValue: Keys.azureStorage_AccountName,
       },

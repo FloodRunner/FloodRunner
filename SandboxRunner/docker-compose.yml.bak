@@ -6,6 +6,7 @@ services:
     environment:
       - MAX_RETRIES=1
       - FLOOD_TESTID=<Id of test in azure blob storage>
+      - FLOOD_MAXALLOWEDSCREENSHOTS=<Maximum allowed screenshots>
       - AZURESTORAGE_ACCOUNTNAME=<azure storage account name>
       - AZURESTORAGE_ACCESSKEY=<azure storage account access key>
       - AZURESTORAGE_CONTAINERFOLDERNAME=<azure storage account nested folder name>

@@ -7,6 +7,10 @@ export class Keys {
   static maximumRetries =
     process.env.MAX_RETRIES === undefined ? 1 : process.env.MAX_RETRIES;
   static testId = process.env.FLOOD_TESTID || config.get("flood.testId");
+  static maximumAllowedScreenshots =
+    process.env.FLOOD_MAXALLOWEDSCREENSHOTS ||
+    config.get("flood.maximumAllowedScreenshots");
+  static testResultFolderName = "testResult";
 
   /*Azure Storage Settings*/
   static azure_storageAccountName =

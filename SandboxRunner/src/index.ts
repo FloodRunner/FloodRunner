@@ -13,6 +13,7 @@ fileCleanup();
 
 //download flood element script
 const azureBlobService = new AzureblobService();
+
 (async () => {
   await azureBlobService.downloadFile(Keys.testId);
 })().catch((e) => {
@@ -33,7 +34,7 @@ const floodTests = [
 
 systemLogger.info("--- Starting Flood Element tests ---");
 
-// run tests
+//run tests
 (async () => {
   const testResults = await testHelpers.runFloodTests(floodTests);
 
