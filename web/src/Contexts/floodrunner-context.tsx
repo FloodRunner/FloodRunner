@@ -47,10 +47,10 @@ export class FloodRunnerProvider extends Component<{}, IState> {
 
   createFloodRunnerClient = async (): Promise<AxiosInstance> => {
     var authToken = null;
-    console.log("creating axios client");
     if (this.context.isAuthenticated)
       authToken = await this.context.getTokenSilently();
 
+    // console.log({ authToken });
     return axios.create({
       baseURL: Config.floodrunner_api_url,
       headers: {
@@ -68,9 +68,7 @@ export class FloodRunnerProvider extends Component<{}, IState> {
 
   getAllTests = async (): Promise<FloodTest[]> => {
     try {
-      console.log("getting all tests");
       const floodRunnerClient = await this.createFloodRunnerClient();
-      console.log(floodRunnerClient);
       const response = await floodRunnerClient.get<FloodTest[]>("/floodtest");
       const floodTests = response.data;
       return floodTests;

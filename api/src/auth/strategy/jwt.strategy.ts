@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(BaseStrategy) {
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
-        jwksRequestsPerMinute: 5,
+        jwksRequestsPerMinute: 6,
         jwksUri: `https://${Keys.auth_domain}/.well-known/jwks.json`,
       }),
 
@@ -25,12 +25,12 @@ export class JwtStrategy extends PassportStrategy(BaseStrategy) {
       audience: Keys.auth_audience,
       issuer: `https://${Keys.auth_domain}/`,
       algorithms: ['RS256'],
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
+  async validate(req: Request, payload: JwtPayload): Promise<User> {
     const minimumScope = ['openid', 'profile', 'email'];
-
     if (
       payload?.scope
         ?.split(' ')
@@ -46,9 +46,16 @@ export class JwtStrategy extends PassportStrategy(BaseStrategy) {
     let user = await this.userRepository.findById(payload.sub);
     if (!user) {
       this._logger.log(`User with subjectId: ${payload.sub} not found.`);
-      user = await this.userRepository.createUser(payload);
+      user = await this.userRepository.createUser(
+        this.extractJwtFromRequestHeader(req),
+      );
     }
 
     return user;
+  }
+
+  extractJwtFromRequestHeader(req: Request): string {
+    var authorizationHeader: string = req.headers['authorization'];
+    return authorizationHeader.split(' ')[1];
   }
 }
