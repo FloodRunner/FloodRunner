@@ -53,4 +53,6 @@ export class Keys {
   static flood_maximumAllowedScreenshots =
     process.env.FLOOD_MAXALLOWEDSCREENSHOTS ||
     config.get('flood.maximumAllowedScreenshots');
+
+  static flood_screenshotsSubfolderName = 'screenshots';
 }
