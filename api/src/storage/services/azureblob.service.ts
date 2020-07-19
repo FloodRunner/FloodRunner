@@ -140,6 +140,10 @@ export class AzureBlobService implements IFileService {
     id: string,
     testFolder: string,
   ): Promise<{ logFileUris: string[]; screenShotUris: string[] }> {
+    this._logger.debug(
+      `Getting test results for, testId: ${id} and run: ${testFolder}`,
+    );
+
     const containerName = this.createContainerName(id);
     const containerClient = blobServiceClient.getContainerClient(
       `${containerName}`,
@@ -152,6 +156,8 @@ export class AzureBlobService implements IFileService {
       prefix: `${testFolder}`,
     })) {
       //strip test folder from blob name
+      this._logger.debug(`Found file with name: ${blob.name}`);
+
       var fileName = blob.name.replace(`${testFolder}/`, '');
       if (blob.name.includes('.log')) {
         logFileUris.push(
