@@ -110,7 +110,6 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     try {
       const response = await axios.get<string>(logUri);
       const logs = response.data;
-      console.log(logs);
       return logs;
     } catch (err) {
       console.error(err);

@@ -4,7 +4,7 @@ import { Segment } from "semantic-ui-react";
 function PrivacyPolicy() {
   const companyName = "FloodRunner";
   const websiteUrl = "https://app.floodrunner.dev";
-  const supportEmailAddress = "support.floodrunner@gmail.com";
+  const supportEmailAddress = "floodrunnerdev@gmail.com";
 
   return (
     <Segment>
