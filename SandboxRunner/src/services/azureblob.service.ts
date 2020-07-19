@@ -85,19 +85,19 @@ export class AzureblobService implements IFileService {
     //create container to hold test script and results
     const containerName = this.createContainerName(id);
 
-    //get reference to container client (this will upload to floodtest-<testId>/<sample date, eg. 2020-07-16T10:49+00:00>/)
-    const logFileContainerClient = blobServiceClient.getContainerClient(
-      `${containerName}/${Keys.azure_containerFolderName}`
-    );
-
-    await this.uploadLogsAsync(logFileContainerClient);
-
     //get reference to container client (this will upload to floodtest-<testId>/<sample date, eg. 2020-07-16T10:49+00:00>/screenshots/)
     const screenshotContainerClient = blobServiceClient.getContainerClient(
       `${containerName}/${Keys.azure_containerFolderName}/${this._screenshotDirectoryName}`
     );
 
     await this.uploadScreenshotsAsync(screenshotContainerClient);
+
+    //get reference to container client (this will upload to floodtest-<testId>/<sample date, eg. 2020-07-16T10:49+00:00>/)
+    const logFileContainerClient = blobServiceClient.getContainerClient(
+      `${containerName}/${Keys.azure_containerFolderName}`
+    );
+
+    await this.uploadLogsAsync(logFileContainerClient);
   }
 
   public async uploadScreenshotsAsync(
@@ -127,7 +127,7 @@ export class AzureblobService implements IFileService {
       this._maximumScreenshotsAllowed
     );
 
-    await allowedScreenshots.map(async (screenshotName, index) => {
+    allowedScreenshots.map(async (screenshotName, index) => {
       const screenshotUploadName = `${index + 1}.jpg`;
       systemLogger.info(
         `--- Uploading screenshot: ${screenshotUploadName} ---`
@@ -165,6 +165,8 @@ export class AzureblobService implements IFileService {
       Keys.system_systemLogFileName,
       logFileContainerClient
     );
+
+    systemLogger.info(`--- Uploaded all log files ---`);
   }
 
   private async uploadFileAsync(
