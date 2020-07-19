@@ -20,8 +20,8 @@ The process of using FloodRunner is simple and easy:
 #### Features:
 
 - <strong>Schedule Flood Element tests</strong>: Easily schedule your flood element tests to ensure your application is being continously tested.
-- <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots (coming soon) and execution time (coming soon).
-- <strong>Integrate with Flood.io (In Progress)</strong>: Leverage Flood.io to run your scripts as load tests.
+- <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots and execution time (coming soon).
+- <strong>Integrate with Flood.io (coming soon)</strong>: Leverage Flood.io to run your scripts as load tests.
 - <strong>Secure login and API authorization</strong>: FloodRunner is secured using Auth0.com ensuring that login is secure and that data is completely isolated between users.
 - <strong>Cloud native</strong>: Components are dockerized and designed to run in Kubernetes, including all relevant configuration scripts needed for deployment and configuration.
 
@@ -52,7 +52,7 @@ Your tests will display on the overview page showing their status (passing/faili
 
 ![FloodRunner Home Page](/resources/images/usage/home_page.png)
 
-Click `View Results` to see detailed results of your test executions. Here you can view and download your test script using the `View Script` button and delete the test if its no longer needed. A graph is shown with the latest test executions and clicking on a bar will download that tests logs and any screenshots (coming soon).
+Click `View Results` to see detailed results of your test executions. Here you can view and download your test script using the `View Script` button and delete the test if its no longer needed. A graph is shown with the latest test executions and clicking on a bar will download that tests logs and any screenshots.
 
 ![FloodRunner Results Page](/resources/images/usage/results_page.png)
 
