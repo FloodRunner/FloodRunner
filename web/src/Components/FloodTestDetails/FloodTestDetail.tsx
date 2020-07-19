@@ -202,12 +202,9 @@ function FloodTestDetail(props) {
   };
 
   const renderLogs = () => {
-    console.log(_.isEmpty(screenshotUris));
     return (
       <Segment.Group>
-        {_.isEmpty(screenshotUris) ? (
-          ""
-        ) : (
+        {!_.isEmpty(screenshotUris) ? (
           <>
             <Segment>Screenshots</Segment>
             <Segment.Group className="screenshot-segment">
@@ -216,6 +213,8 @@ function FloodTestDetail(props) {
               </Segment>
             </Segment.Group>
           </>
+        ) : (
+          ""
         )}
 
         <Segment>Logs</Segment>
