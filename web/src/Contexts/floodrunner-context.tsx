@@ -86,6 +86,7 @@ export class FloodRunnerProvider extends Component<{}, IState> {
         `/floodtest/results/${testId}`
       );
       const floodTestResultSummaries = response.data;
+      console.log(floodTestResultSummaries);
       return floodTestResultSummaries;
     } catch (err) {
       console.error(err);
@@ -109,7 +110,6 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     try {
       const response = await axios.get<string>(logUri);
       const logs = response.data;
-      console.log(logs);
       return logs;
     } catch (err) {
       console.error(err);

@@ -33,7 +33,7 @@ The image can be pushed to DockerHub using the command `docker push jellydock/fl
 
 ### Running docker container (standalone mode)
 
-The container can be run using the `docker-compose.yml` file where you will have to specify the required environment variables.
+The container can be run using the `docker-compose.yml` file where you will have to specify the required environment variables. Then you can run it using `docker-compose up`.
 
 ### Running the project
 

@@ -14,6 +14,7 @@ export default () => {
       btnPlay.click();
 
       await browser.takeScreenshot();
+      await browser.takeScreenshot();
 
       setUp = 0;
     } else {

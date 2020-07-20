@@ -9,7 +9,7 @@ function TermsOfService() {
   platform and run them on a schedule, additionally giving insights on those test runs by showing log information
   and test status.
   `;
-  const supportEmailAddress = "support.floodrunner@gmail.com";
+  const supportEmailAddress = "floodrunnerdev@gmail.com";
 
   return (
     <Segment>

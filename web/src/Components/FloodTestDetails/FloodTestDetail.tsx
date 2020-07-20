@@ -3,14 +3,7 @@ import { useAuth0 } from "../../Contexts/auth0-context";
 import { useFloodRunner } from "../../Contexts/floodrunner-context";
 import { FloodTest, FloodTestResultSummary } from "../../Models/Api/FloodTest";
 import { Label, Segment, Header } from "semantic-ui-react";
-import {
-  Card,
-  Item,
-  Button,
-  Icon,
-  Container,
-  Statistic,
-} from "semantic-ui-react";
+import { Card, Button, Icon } from "semantic-ui-react";
 import moment from "moment";
 import LoadingPlaceholder from "../Shared/Loader/LoadingPlaceholder";
 import {
@@ -31,11 +24,12 @@ import "./floodtestdetails-style.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import { UnControlled as CodeMirror } from "react-codemirror2";
+import TestImageCarousel from "./TestImageCarousel";
 require("codemirror/mode/javascript/javascript");
 
 function FloodTestDetail(props) {
   const { testId } = props.match.params;
-  const { isLoading, getIdTokenClaims, getTokenSilently } = useAuth0();
+  const { isLoading } = useAuth0();
   const {
     getTestById,
     getTestResultSummariesById,
@@ -47,6 +41,7 @@ function FloodTestDetail(props) {
   const [floodTestResultSummaries, setfloodTestResultSummaries] = useState<
     FloodTestResultSummary[]
   >([]);
+  const [screenshotUris, setScreenshotUris] = useState<string[]>([]);
   const [floodTest, setfloodTest] = useState<FloodTest>();
   const [appLogs, setAppLogs] = useState<string>();
   const [highlightedIndex, setHighlightedIndex] = useState<Number>(0);
@@ -61,7 +56,6 @@ function FloodTestDetail(props) {
     async function test() {
       let floodTest = await getTestById(testId);
       let floodTestResultSummaries = await getTestResultSummariesById(testId);
-      console.log(floodTestResultSummaries);
       setfloodTest(floodTest);
       setfloodTestResultSummaries(floodTestResultSummaries);
     }
@@ -175,6 +169,7 @@ function FloodTestDetail(props) {
     value: number;
     isSuccessful: boolean;
     appLogUri: string;
+    screenshotUris: string[];
   }
 
   const onBarClick = async (data, index: number) => {
@@ -182,6 +177,8 @@ function FloodTestDetail(props) {
     setHighlightedIndex(index);
     if (payload.appLogUri) setAppLogs(await getTestLogs(payload.appLogUri));
     else setAppLogs("No data");
+
+    if (payload.screenshotUris) setScreenshotUris(payload.screenshotUris);
   };
 
   const calculateBarFillColor = (
@@ -207,7 +204,20 @@ function FloodTestDetail(props) {
   const renderLogs = () => {
     return (
       <Segment.Group>
-        <Segment>Test Logs</Segment>
+        {!_.isEmpty(screenshotUris) ? (
+          <>
+            <Segment>Screenshots</Segment>
+            <Segment.Group>
+              <Segment textAlign="center">
+                <TestImageCarousel screenshotsUris={screenshotUris} />
+              </Segment>
+            </Segment.Group>
+          </>
+        ) : (
+          ""
+        )}
+
+        <Segment>Logs</Segment>
         <Segment.Group>
           <Segment className="log-segment">
             <pre>{appLogs}</pre>
@@ -229,11 +239,12 @@ function FloodTestDetail(props) {
     var data: Data[] = summaries.map((summary) => {
       return {
         date: moment(summary.runOn.toString()).format("HH:mm"),
-        value: 2,
+        value: 2, //hard coding execution time for now
         isSuccessful: summary.isSuccessful,
         appLogUri: _.find(summary.logFileUris, function (f) {
           return f.includes("app.log");
         }),
+        screenshotUris: summary.screenShotUris,
       };
     });
 
@@ -261,7 +272,10 @@ function FloodTestDetail(props) {
             animationDuration={1500}
           >
             {data.map((entry, index) => (
-              <Cell fill={calculateBarFillColor(index, entry.isSuccessful)} />
+              <Cell
+                fill={calculateBarFillColor(index, entry.isSuccessful)}
+                key={index}
+              />
             ))}
           </Bar>
         </BarChart>

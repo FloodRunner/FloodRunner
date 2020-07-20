@@ -39,6 +39,12 @@ export class FloodTestJobService {
     );
   }
 
+  /**
+   * Replaces the environment variables in the specified yaml file
+   * @param manifest The job manifest describing the kubernetes job to start the floodrunner/sandbox container
+   * @param testId The testId to execute in the container
+   * @param testRunName The test run name which is a timestamp (eg. 2020-07-16T10:49+00:00)
+   */
   private replaceEnvironmentVariables(
     manifest: string,
     testId: string,
@@ -48,6 +54,10 @@ export class FloodTestJobService {
       {
         token: '__FLOOD_TESTID__',
         tokenValue: testId,
+      },
+      {
+        token: '__FLOOD_MAXALLOWEDSCREENSHOTS__',
+        tokenValue: Keys.flood_maximumAllowedScreenshots,
       },
       {
         token: '__AZURESTORAGE_ACCOUNTNAME__',
@@ -140,7 +150,8 @@ export class FloodTestJobService {
   };
 
   /**
-   * Queue processing function that processes the results of the flood element test run completed by the FloodElement-SandboxRunner container.
+   * Queue processing function that processes the results of the flood element test
+   * run completed by the FloodElement-SandboxRunner container.
    * This function will be executed when the flood element test run has completed
    */
   processFloodElementTestRun = async (message: string) => {

@@ -25,3 +25,7 @@
 .log-segment {
   overflow: auto;
 }
+
+.screenshot-segment {
+  max-width: 30em;
+}

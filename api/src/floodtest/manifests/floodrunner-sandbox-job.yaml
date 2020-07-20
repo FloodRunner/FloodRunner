@@ -25,6 +25,8 @@ spec:
           env:
             - name: FLOOD_TESTID
               value: __FLOOD_TESTID__
+            - name: FLOOD_MAXALLOWEDSCREENSHOTS
+              value: "__FLOOD_MAXALLOWEDSCREENSHOTS__"
             - name: AZURESTORAGE_ACCOUNTNAME
               value: __AZURESTORAGE_ACCOUNTNAME__
             - name: AZURESTORAGE_ACCESSKEY

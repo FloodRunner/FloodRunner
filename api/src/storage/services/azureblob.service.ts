@@ -134,12 +134,16 @@ export class AzureBlobService implements IFileService {
   /**
    * Returns an object containering the logFileUris and screenShotUris of the executed test run
    * @param id Id of Flood Element Test
-   * @param testFolder Folder where results where uploaded to in Azure Blob Storage
+   * @param testFolder Folder where results where uploaded to in Azure Blob Storage which is a timestamp (eg. 2020-07-16T10:49+00:00)
    */
   async getTestResults(
     id: string,
     testFolder: string,
   ): Promise<{ logFileUris: string[]; screenShotUris: string[] }> {
+    this._logger.debug(
+      `Getting test results for, testId: ${id} and run: ${testFolder}`,
+    );
+
     const containerName = this.createContainerName(id);
     const containerClient = blobServiceClient.getContainerClient(
       `${containerName}`,
@@ -152,14 +156,24 @@ export class AzureBlobService implements IFileService {
       prefix: `${testFolder}`,
     })) {
       //strip test folder from blob name
-      const fileName = blob.name.replace(`${testFolder}/`, '');
+      this._logger.debug(`Found file with name: ${blob.name}`);
+
+      var fileName = blob.name.replace(`${testFolder}/`, '');
       if (blob.name.includes('.log')) {
         logFileUris.push(
           this.generateSasUrl(containerName, fileName, testFolder),
         );
       } else {
+        fileName = fileName.replace(
+          `${Keys.flood_screenshotsSubfolderName}/`,
+          '',
+        );
         screenShotUris.push(
-          this.generateSasUrl(containerName, fileName, testFolder),
+          this.generateSasUrl(
+            containerName,
+            fileName,
+            `${testFolder}/${Keys.flood_screenshotsSubfolderName}`,
+          ),
         );
       }
     }

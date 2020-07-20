@@ -14,7 +14,9 @@ systemLogger.info(`Maximum retries set to: ${Keys.maximumRetries}`);
 // define test function to run a singular flood element test
 const runTest = (testScript: string) =>
   new Promise((resolve, reject) => {
-    exec(`element run ${testScript} ${Keys.showBrowser} --no-sandbox`)
+    exec(
+      `element run ${testScript} ${Keys.showBrowser} --no-sandbox --work-root ./${Keys.testResultFolderName}`
+    )
       .then(function (result) {
         var resultContent = result.stdout;
         if (!resultContent.toLowerCase().includes("error")) {

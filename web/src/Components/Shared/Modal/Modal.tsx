@@ -14,6 +14,12 @@ const renderActions = (actions) => {
   }
 };
 
+const renderTitle = (title) => {
+  if (title) {
+    return <div className="header">{title}</div>;
+  }
+};
+
 function Modal(props) {
   return ReactDOM.createPortal(
     <div onClick={props.onDismiss} className="ui dimmer modals visible active ">
@@ -21,7 +27,7 @@ function Modal(props) {
         onClick={(e) => e.stopPropagation()}
         className="ui transition modal visible active floodrunner-modal"
       >
-        <div className="header">{props.title}</div>
+        {renderTitle(props.title)}
         {renderContent(props.content)}
         {renderActions(props.actions)}
       </div>
