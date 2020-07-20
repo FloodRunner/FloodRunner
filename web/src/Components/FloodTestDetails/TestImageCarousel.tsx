@@ -57,6 +57,14 @@ const TestImageCarousel: React.FC<TestImageProps> = ({ screenshotsUris }) => {
     }
   };
 
+  const calculateScreenshotMaxWidth = () => {
+    return screenshotsUris.length === 1
+      ? "20em"
+      : screenshotsUris.length === 2
+      ? "40em"
+      : "60em";
+  };
+
   return (
     <>
       <CarouselProvider
@@ -65,6 +73,10 @@ const TestImageCarousel: React.FC<TestImageProps> = ({ screenshotsUris }) => {
         totalSlides={screenshotsUris.length}
         visibleSlides={Math.min(3, screenshotsUris.length)}
         orientation="horizontal"
+        style={{
+          maxWidth: calculateScreenshotMaxWidth(),
+          display: "inline-block",
+        }}
       >
         <Slider
           trayProps={{

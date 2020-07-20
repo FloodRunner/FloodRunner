@@ -207,7 +207,7 @@ function FloodTestDetail(props) {
         {!_.isEmpty(screenshotUris) ? (
           <>
             <Segment>Screenshots</Segment>
-            <Segment.Group className="screenshot-segment">
+            <Segment.Group>
               <Segment textAlign="center">
                 <TestImageCarousel screenshotsUris={screenshotUris} />
               </Segment>
