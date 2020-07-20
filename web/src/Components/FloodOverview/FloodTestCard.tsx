@@ -32,7 +32,7 @@ const FloodTestCard = (floodTest?: FloodTest) => {
   };
 
   return (
-    <Card fluid>
+    <Card fluid id={`testcard-${floodTest._id}`}>
       <Card.Content>
         <Item>
           <Item.Content>

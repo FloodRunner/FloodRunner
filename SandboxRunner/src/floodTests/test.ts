@@ -24,8 +24,5 @@ export default () => {
   step("Test: Random Site Navigation Login", async (browser) => {
     //visit random website
     await browser.visit("https://google.com");
-
-    //take screenshot of final page shown
-    await browser.takeScreenshot();
   });
 };

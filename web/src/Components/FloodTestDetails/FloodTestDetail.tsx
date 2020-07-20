@@ -129,7 +129,10 @@ function FloodTestDetail(props) {
 
   const renderTestStatus = (isPassing: boolean) => {
     return (
-      <Label color={isPassing === null ? "grey" : isPassing ? "green" : "red"}>
+      <Label
+        color={isPassing === null ? "grey" : isPassing ? "green" : "red"}
+        id="overallTestStatus"
+      >
         {isPassing === null ? "Incomplete" : isPassing ? "Passing" : "Failing"}
       </Label>
     );
