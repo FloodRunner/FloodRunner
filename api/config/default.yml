@@ -1,18 +1,19 @@
 mongodb:
-  host: 'localhost'
-  user: 'jbird'
+  host: "localhost"
+  user: "jbird"
   port: 27017
-  jobDatabaseName: 'flood'
-  jobCollectionName: 'jobs'
-  floodDatabaseName: 'flood'
+  jobDatabaseName: "flood"
+  jobCollectionName: "jobs"
+  floodDatabaseName: "flood"
 
 server:
   port: 5001
-  fileServiceStrategy: 'AZURE'
+  fileServiceStrategy: "AZURE"
 
 auth:
-  domain: 'javaadpatel.eu.auth0.com'
-  audience: 'floodrunnerapi'
+  domain: "javaadpatel.eu.auth0.com"
+  audience: "floodrunnerapi"
 
 flood:
   maximumAllowedScreenshots: 10
+  maxRetries: 1

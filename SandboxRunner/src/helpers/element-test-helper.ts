@@ -9,7 +9,7 @@ const exec = childProcessPromise.exec;
 systemLogger.info(`Running browser setting: ${Keys.showBrowser}`);
 
 // set maximum number of retries
-systemLogger.info(`Maximum retries set to: ${Keys.maximumRetries}`);
+systemLogger.info(`Maximum retries set to: ${Keys.flood_maximumRetries}`);
 
 // define test function to run a singular flood element test
 const runTest = (testScript: string) =>
@@ -63,7 +63,10 @@ async function runFloodTests(floodTests: string[]) {
     //get around transient failures by rerunning failed tests
     var numTimesRan = 0;
 
-    while (numTimesRan < Keys.maximumRetries && testSuccessful === false) {
+    while (
+      numTimesRan < Keys.flood_maximumRetries &&
+      testSuccessful === false
+    ) {
       systemLogger.info(`--- Running test: ${test} ---`);
 
       try {

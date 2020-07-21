@@ -56,6 +56,10 @@ export class FloodTestJobService {
         tokenValue: testId,
       },
       {
+        token: '__FLOOD_MAX_RETRIES__',
+        tokenValue: Keys.flood_maxRetries,
+      },
+      {
         token: '__FLOOD_MAXALLOWEDSCREENSHOTS__',
         tokenValue: Keys.flood_maximumAllowedScreenshots,
       },

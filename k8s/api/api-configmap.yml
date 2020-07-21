@@ -22,3 +22,5 @@ data:
   FILE_SERVICE_STRATEGY: "AZURE"
   #maximum number of screenshots that a test can take
   FLOOD_MAXALLOWEDSCREENSHOTS: "10"
+  #maximum number of times a test will retry
+  FLOOD_MAX_RETRIES: "1"

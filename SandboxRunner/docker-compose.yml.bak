@@ -4,7 +4,7 @@ services:
     build:
       context: .
     environment:
-      - MAX_RETRIES=1
+      - FLOOD_MAX_RETRIES=1
       - FLOOD_TESTID=<Id of test in azure blob storage>
       - FLOOD_MAXALLOWEDSCREENSHOTS=<Maximum allowed screenshots>
       - AZURESTORAGE_ACCOUNTNAME=<azure storage account name>
