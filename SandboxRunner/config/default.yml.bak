@@ -1,5 +1,7 @@
 flood:
   testId: <testId>
+  maximumAllowedScreenshots: <maximumAllowedScreenshots>
+  maxRetries: <maxRetries>
 
 azure-storage:
   accountName: <accountName>

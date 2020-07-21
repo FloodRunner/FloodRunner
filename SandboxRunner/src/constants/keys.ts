@@ -4,8 +4,10 @@ export class Keys {
   /* Flood Element Settings */
   static showBrowser =
     process.env.NODE_ENV == "Production" ? "" : "--no-headless";
-  static maximumRetries =
-    process.env.MAX_RETRIES === undefined ? 1 : process.env.MAX_RETRIES;
+  static flood_maximumRetries =
+    process.env.FLOOD_MAX_RETRIES ||
+    config.get("flood.maxRetries") ||
+    process.env.MAX_RETRIES;
   static testId = process.env.FLOOD_TESTID || config.get("flood.testId");
   static maximumAllowedScreenshots =
     process.env.FLOOD_MAXALLOWEDSCREENSHOTS ||

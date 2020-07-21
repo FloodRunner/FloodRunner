@@ -13,7 +13,7 @@ spec:
       volumes:
         - name: dockervolume
           hostPath:
-            path: '/var/run/docker.sock'
+            path: "/var/run/docker.sock"
       containers:
         - name: floodrunner-sandboxrunner
           image: jellydock/floodrunner-sandboxrunner
@@ -25,6 +25,8 @@ spec:
           env:
             - name: FLOOD_TESTID
               value: __FLOOD_TESTID__
+            - name: FLOOD_MAX_RETRIES
+              value: "__FLOOD_MAX_RETRIES__"
             - name: FLOOD_MAXALLOWEDSCREENSHOTS
               value: "__FLOOD_MAXALLOWEDSCREENSHOTS__"
             - name: AZURESTORAGE_ACCOUNTNAME
