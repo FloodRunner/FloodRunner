@@ -15,13 +15,6 @@ fileCleanup();
 //download flood element script
 const azureBlobService = new AzureblobService();
 
-(async () => {
-  await azureBlobService.downloadFile(Keys.testId);
-})().catch((e) => {
-  systemLogger.error(e);
-  throw "Unable to download test script";
-});
-
 //initialize queue service
 const queueService = new RabbitQueueService();
 
@@ -35,13 +28,18 @@ const floodTests = [
 
 // determine test type
 const testType = Keys.testType as TestType;
-
-systemLogger.info("--- Starting Flood Element tests ---");
+systemLogger.info(`--- Test type: ${testType} ---`);
+systemLogger.info(`--- Starting ${testType} test ---`);
 
 //run tests
 (async () => {
+  //download test
+  await azureBlobService.downloadFile(Keys.testId);
+
+  //run test
   const testResults = await testHelpers.runFloodTests(floodTests, testType);
 
+  //log results
   testHelpers.logResults(testResults);
 
   await testHelpers.delay(1000);
@@ -55,8 +53,11 @@ systemLogger.info("--- Starting Flood Element tests ---");
   systemLogger.info("--- Completed Flood Element tests ---");
 
   systemLogger.info(`--- Uploading results to Azure Blob Storage ---`);
+
+  //upload test results
   await azureBlobService.uploadTestResults(Keys.testId, testResults[0]);
 
+  //send message to api
   systemLogger.info(`--- Sending message to RabbitMq queue ---`);
   queueService.sendQueueMessage(Keys.testId, testResults[0]);
 

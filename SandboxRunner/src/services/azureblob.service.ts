@@ -69,6 +69,9 @@ export class AzureblobService implements IFileService {
 
     //create directory
     if (!fs.existsSync(this._testDirectory)) {
+      systemLogger.info(
+        `Creating directory for downloaded test: ${this._testDirectory}`
+      );
       fs.mkdirSync(this._testDirectory);
     }
 

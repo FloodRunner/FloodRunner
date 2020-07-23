@@ -73,8 +73,6 @@ const runFloodTest = (testScript: string) =>
 const runPuppeteerTest = (testScript: string) =>
   new Promise((resolve, reject) => {
     try {
-      applicationLogger.info(`running in directory ${presentWorkingDirectory}`);
-      applicationLogger.info(`trying to read file ${testScript}`);
       var puppeteerScript = fs.readFileSync(`${testScript}`, {
         encoding: "utf-8",
       });
