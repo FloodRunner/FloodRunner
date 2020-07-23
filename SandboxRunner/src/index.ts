@@ -4,6 +4,7 @@ import testHelpers from "./helpers/element-test-helper";
 import { AzureblobService } from "./services/azureblob.service";
 import { Keys } from "./constants/keys";
 import { RabbitQueueService } from "./services/rabbit-queue.service";
+import { TestType } from "./constants/test-type.enum";
 
 let testsPassedSuccessfully: boolean = false;
 
@@ -32,11 +33,14 @@ const floodTests = [
   )}`,
 ];
 
+// determine test type
+const testType = Keys.testType as TestType;
+
 systemLogger.info("--- Starting Flood Element tests ---");
 
 //run tests
 (async () => {
-  const testResults = await testHelpers.runFloodTests(floodTests);
+  const testResults = await testHelpers.runFloodTests(floodTests, testType);
 
   testHelpers.logResults(testResults);
 

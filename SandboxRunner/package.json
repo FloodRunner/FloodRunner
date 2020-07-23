@@ -22,13 +22,15 @@
     "directory-tree": "^2.2.4",
     "file-system": "^2.2.2",
     "js-yaml": "^3.13.1",
+    "lodash": "^4.17.19",
     "logform": "^2.1.2",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.3",
+    "puppeteer": "^5.2.1",
     "rimraf": "^3.0.2",
     "serialize-javascript": "^3.0.0",
     "ts-node": "^8.10.1",
-    "vm2": "^3.9.1",
+    "vm2": "^3.9.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
