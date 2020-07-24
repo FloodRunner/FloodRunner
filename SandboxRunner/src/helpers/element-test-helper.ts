@@ -76,6 +76,7 @@ const runPuppeteerTest = (testScript: string) =>
       var puppeteerScript = fs.readFileSync(`${testScript}`, {
         encoding: "utf-8",
       });
+
       var puppeteerWorkingDirectory = `./${Keys.testResultFolderName}/xx/${Keys.testScreenshotFolderName}`;
 
       //create directory

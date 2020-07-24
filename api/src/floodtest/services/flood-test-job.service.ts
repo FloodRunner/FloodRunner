@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import * as ApiClient from 'kubernetes-client';
 import { TestResultDto } from '../dtos/test-result.dto';
 import { Keys } from '../../constants/keys';
+import { TestType } from '../../common/enums/test-types.enum';
 const Client = ApiClient.Client1_13;
 const client = new Client({ version: '1.13' });
 const jobManifestName = 'floodrunner-sandbox-job.yaml';
@@ -48,12 +49,17 @@ export class FloodTestJobService {
   private replaceEnvironmentVariables(
     manifest: string,
     testId: string,
+    testType: TestType,
     testRunName: string,
   ): string {
     var tokenReplacementMapping = [
       {
         token: '__FLOOD_TESTID__',
         tokenValue: testId,
+      },
+      {
+        token: '__FLOOD_TEST_TYPE__',
+        tokenValue: testType.toString(),
       },
       {
         token: '__FLOOD_MAX_RETRIES__',
