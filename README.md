@@ -11,7 +11,7 @@
 
 ---
 
-A complete framework for monitoring web applications using [Flood Element](https://element.flood.io/) tests. Easily monitor your web applications by continously running Element tests that simulate user behaviour. Browser level tests have advantages over traditional protocol level tests because they are capable of testing any user behaviour simply with easy to maintain readable scripts.
+A complete framework for monitoring web applications using browser tests. Easily monitor your web applications by continously running browser tests that simulate user behaviour. Browser level tests have advantages over traditional protocol level tests because they are capable of testing any user behaviour simply with easy to maintain readable scripts.
 
 The process of using FloodRunner is simple and easy:
 
@@ -19,10 +19,11 @@ The process of using FloodRunner is simple and easy:
 
 #### Features:
 
-- <strong>Schedule Flood Element tests</strong>: Easily schedule your flood element tests to ensure your application is being continously tested.
+- <strong>Schedule browser tests</strong>: Easily schedule your browser tests to ensure your application is being continously tested.
+- <strong>Multiple scripting frameworks</strong>: Supports both [Puppeteer](https://pptr.dev/) and [Element](https://element.flood.io/) scripts.
 - <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots and execution time (coming soon).
-- <strong>Integrate with Flood.io (coming soon)</strong>: Leverage Flood.io to run your scripts as load tests.
-- <strong>Secure login and API authorization</strong>: FloodRunner is secured using Auth0.com ensuring that login is secure and that data is completely isolated between users.
+- <strong>Integrate with Flood.io (coming soon)</strong>: Leverage Flood.io to run your scripts as load tests (applies to Element scripts only)
+- <strong>Secure login and API authorization</strong>: Secured using Auth0.com ensuring that login is secure and that data is completely isolated between users.
 - <strong>Cloud native</strong>: Components are dockerized and designed to run in Kubernetes, including all relevant configuration scripts needed for deployment and configuration.
 
 ## Index
@@ -40,15 +41,15 @@ The process of using FloodRunner is simple and easy:
 
 ## Quickstart
 
-Once your FloodRunner instance is up and running you will be able to login and should be presented with a overview page like this:
+Once your FloodRunner instance is up and running you will be able to login and will be presented with an overview page like this:
 
 ![FloodRunner Empty Home Page](/resources/images/usage/empty_home_page.png)
 
-Click `Create Test` and schedule your Element test using the form:
+Click `Create Test` and create your browser test using the form:
 
 ![FloodRunner Creation Form](/resources/images/usage/creation_form.png)
 
-Your tests will display on the overview page showing their status (passing/failing), test schedule and last run date.
+Your tests will display on the overview page showing their status (passing/failing), test schedule, last run date and test type.
 
 ![FloodRunner Home Page](/resources/images/usage/home_page.png)
 
@@ -93,7 +94,7 @@ NB. For CloudFlare ensure A record is proxied and SSL Setting is set to `Full`
 
 ### 2. Deploying RabbitMq
 
-RabbitMq is used as the messaging service for scheduling test executions and also for communicating from the Sandboxed Flood Element Kubernetes jobs and the FloodRunner NestJs API.
+RabbitMq is used as the messaging service for scheduling test executions and also for communicating from the Sandboxed Kubernetes Browser jobs and the FloodRunner NestJs API.
 
 Ensure Helm is installed on your machine, [install instructions](https://helm.sh/docs/intro/install/). Then complete the following steps:
 
@@ -112,7 +113,7 @@ Once configured, run `skaffold run -p mongodb` this will setup a MongoDb databas
 
 ### 4. Deploying FloodRunner NestJs API
 
-The API controls all the operations relating to test creation, modification, deletion and kicking off the kuberenetes job to execute the element scripts.
+The API controls all the operations relating to test creation, modification, deletion and kicking off the kubernetes job to execute the browser tests.
 
 You will need to configure the `api-configmap.yml` file ensuring that you input the correct Auth0 settings for secure login, and azure storage account name.
 
@@ -124,7 +125,7 @@ You will then need to login to your DNS provider (eg. CloudFlare) and create a C
 
 #### 4.1 Setting up Azure Blob Storage
 
-If you choose to use Azure blob storage for storing the Flood Element logs and screenshots, it is important to configure the CORS origins in the portal to include to allow the frontend web portal to fetch the resources. For a broad configuration use:
+If you choose to use Azure blob storage for storing the browser test logs and screenshots, it is important to configure the CORS origins in the portal to include to allow the frontend web portal to fetch the resources. For a broad configuration use:
 
 - Allowed origins: \*
 - Allowed methods: GET
@@ -136,7 +137,7 @@ If this is not configured you will receive CORS errors when fetching the resourc
 
 ### 5. Deploying FloodRunner React Web App
 
-The front end allows users to create/manage element tests and view the results of those tests.
+The front end allows users to create/manage browser tests and view the results of those tests.
 
 You will need to configure the `web-configmap.yml` file and ensure you put in the correct settings for your Auth0 instance and also the correct url for your floodrunner api, which should be at `https://app.<YOUR DOMAIN>/api`.
 
