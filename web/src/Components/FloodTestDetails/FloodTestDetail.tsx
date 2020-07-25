@@ -177,7 +177,7 @@ function FloodTestDetail(props) {
 
   interface Data {
     date: string;
-    value: number;
+    value: string;
     isSuccessful: boolean;
     appLogUri: string;
     screenshotUris: string[];
@@ -250,7 +250,7 @@ function FloodTestDetail(props) {
     var data: Data[] = summaries.map((summary) => {
       return {
         date: moment(summary.runOn.toString()).format("HH:mm"),
-        value: 2, //hard coding execution time for now
+        value: "2", //hard coding execution time for now
         isSuccessful: summary.isSuccessful,
         appLogUri: _.find(summary.logFileUris, function (f) {
           return f.includes("app.log");
