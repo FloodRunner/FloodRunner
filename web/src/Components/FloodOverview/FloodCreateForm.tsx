@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFloodRunner } from "../../Contexts/floodrunner-context";
-import { Form, Button, Icon, Message } from "semantic-ui-react";
+import { Form, Button, Icon, Message, Image } from "semantic-ui-react";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Modal from "../Shared/Modal/Modal";
 import { CreateFloodTest } from "../../Models/Api/FloodTest";
 import _ from "lodash";
 import history from "../../Utils/history";
+import elementLogo from "../../images/script_types/flood_element.png";
+import puppeteerLogo from "../../images/script_types/puppeteer.png";
+import "./floodtest-overview-style.css";
 
 interface IProps {
   createFloodTest: CreateFloodTest;
@@ -24,6 +27,7 @@ const FloodCreateForm = ({
   maximumTestsReached,
 }: IProps) => {
   const { createTest } = useFloodRunner();
+  const [selectedTestType, setSelectedTestType] = useState<string>("puppeteer");
 
   const renderBetaWarning = () => {
     return (
@@ -35,12 +39,51 @@ const FloodCreateForm = ({
     );
   };
 
+  const testTypeButtons = (
+    setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void
+  ) => {
+    const field = "type";
+    return (
+      <div className="test-type-container">
+        <Button
+          id="puppeteerBtn"
+          className={selectedTestType === "puppeteer" ? "test-type-active" : ""}
+          basic
+          required
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setSelectedTestType("puppeteer");
+            setFieldValue(field, "puppeteer");
+          }}
+        >
+          <Image src={puppeteerLogo} size="tiny" />
+        </Button>
+        <Button
+          id="elementBtn"
+          className={selectedTestType === "element" ? "test-type-active" : ""}
+          basic
+          required
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setSelectedTestType("element");
+            setFieldValue(field, "element");
+          }}
+        >
+          <Image src={elementLogo} size="small" />
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <Formik
       initialValues={{
         name: createFloodTest.name,
         description: createFloodTest.description,
         interval: createFloodTest.interval,
+        type: createFloodTest.type,
         script: null,
       }}
       validationSchema={yup.object().shape({
@@ -93,6 +136,7 @@ const FloodCreateForm = ({
           description: values.description,
           interval: values.interval,
           testScript: values.script,
+          type: values.type,
           userId: null,
         };
 
@@ -111,7 +155,7 @@ const FloodCreateForm = ({
         setFieldValue,
       }) => (
         <Modal
-          title="Create scheduled test"
+          title="Create browser test"
           content={
             maximumTestsReached ? (
               renderBetaWarning()
@@ -155,6 +199,14 @@ const FloodCreateForm = ({
                     onChange={handleChange}
                     error={errors.interval !== undefined}
                   />
+                  <Form.Field
+                    required
+                    name="type"
+                    onChange={(event) => console.log("change event")}
+                    label="Script Type"
+                    control={() => testTypeButtons(setFieldValue)}
+                  ></Form.Field>
+
                   <Form.Input
                     required
                     label="Test Script (.ts file)"

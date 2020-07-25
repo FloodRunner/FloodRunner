@@ -5,3 +5,11 @@
 .addTestBtn {
   margin: 15px 15px 15px 0px !important;
 }
+
+.test-type-container {
+  text-align: center;
+}
+
+.test-type-active {
+  border: 2px solid #6415FF !important;
+}
