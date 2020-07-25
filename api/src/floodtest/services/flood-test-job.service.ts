@@ -154,7 +154,6 @@ export class FloodTestJobService {
       createdFloodTestSummary.testRunName,
     );
 
-    this._logger.debug(modifiedJobManifestYaml);
     var parsedYaml = yaml.safeLoad(modifiedJobManifestYaml);
 
     this._logger.log(
