@@ -1,14 +1,23 @@
 import React, { useEffect, useState, FunctionComponent } from "react";
 import { Button, Icon, Card, Item, Container, Label } from "semantic-ui-react";
 import moment from "moment";
-import { FloodTest } from "../../Models/Api/FloodTest";
+import { FloodTest, TestType } from "../../Models/Api/FloodTest";
 import { Link } from "react-router-dom";
+import "./floodtest-overview-style.css";
 
 const FloodTestCard = (floodTest?: FloodTest) => {
   const renderLabel = (isPassing?: boolean): JSX.Element => {
     return (
       <Label color={isPassing === null ? "grey" : isPassing ? "green" : "red"}>
         {isPassing === null ? "Incomplete" : isPassing ? "Passing" : "Failing"}
+      </Label>
+    );
+  };
+
+  const renderTestTypeLabel = (testType: TestType): JSX.Element => {
+    return (
+      <Label color="pink">
+        {testType === TestType.Puppeteer ? "Puppeteer" : "Element"}
       </Label>
     );
   };
@@ -45,6 +54,7 @@ const FloodTestCard = (floodTest?: FloodTest) => {
               {renderLabel(floodTest.resultOverview.isPassing)}
               {renderInterval(floodTest.interval)}
               {renderLastTimeRan(floodTest.resultOverview?.lastRun?.toString())}
+              {renderTestTypeLabel(floodTest.type)}
               <Link to={`/tests/${floodTest._id}`} className="header">
                 <Button primary animated floated="right">
                   <Button.Content visible>View Results</Button.Content>

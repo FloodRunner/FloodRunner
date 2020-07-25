@@ -31,6 +31,7 @@ export interface FloodTest {
   uri: string;
   description: string;
   interval: number;
+  type: TestType;
   resultOverview: FloodTestResultOverview;
 }
 
