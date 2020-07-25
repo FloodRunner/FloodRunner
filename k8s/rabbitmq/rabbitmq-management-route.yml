@@ -14,12 +14,6 @@ spec:
           port: 15672
       middlewares:
         - name: rabbit-management-stripprefix
-  tls:
-    certResolver: le
-    domains:
-      - main: floodrunner.dev
-        sans:
-          - "*.floodrunner.dev"
 ---
 #Strip prefix
 apiVersion: traefik.containo.us/v1alpha1

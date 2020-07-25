@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { FloodTestResultOverview } from './flood-test-result-overview.schema';
+import { TestType } from '../../../common/enums/test-types.enum';
 
 @Schema()
 export class FloodTest extends Document {
@@ -21,6 +22,9 @@ export class FloodTest extends Document {
 
   @Prop({ required: true })
   resultOverview: FloodTestResultOverview;
+
+  @Prop({ required: true })
+  type: TestType;
 }
 
 export const FloodTestSchema = SchemaFactory.createForClass(FloodTest);

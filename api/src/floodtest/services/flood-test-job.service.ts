@@ -30,10 +30,14 @@ export class FloodTestJobService {
     private readonly fileService: FileService,
   ) {
     this._logger.log('Registering queue callback functions');
+
+    //queue listener for kicking off sandboxrunner job
     this.queueService.registerQueueListener(
       queueService.agendaJobQueueName,
       this.startFloodElementTestRun,
     );
+
+    //queue listener for listening to result of sandboxrunner job
     this.queueService.registerQueueListener(
       queueService.elementQueueName,
       this.processFloodElementTestRun,
@@ -105,6 +109,9 @@ export class FloodTestJobService {
   startFloodElementTestRun = async (testId: string) => {
     this._logger.log(`Starting flood element test run, id: ${testId}`);
 
+    //find associated test to get test type (could be improved by sending type in message)
+    const testType = (await this.floodTestModel.findById(testId)).type;
+
     //create a test summary object
     const runOn = moment.utc();
     const testRunName = runOn.format('YYYY-MM-DDTH:mmZ');
@@ -118,6 +125,7 @@ export class FloodTestJobService {
         isSuccessful: null,
         logFileUri: null,
         runOn: runOnDate,
+        type: testType ?? TestType.Element,
       });
 
       //persist flood test summary
@@ -142,9 +150,11 @@ export class FloodTestJobService {
     var modifiedJobManifestYaml = this.replaceEnvironmentVariables(
       jobManifestYaml,
       testId,
+      createdFloodTestSummary.type,
       createdFloodTestSummary.testRunName,
     );
 
+    this._logger.debug(modifiedJobManifestYaml);
     var parsedYaml = yaml.safeLoad(modifiedJobManifestYaml);
 
     this._logger.log(

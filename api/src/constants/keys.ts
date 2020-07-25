@@ -57,5 +57,7 @@ export class Keys {
   static flood_maxRetries =
     process.env.FLOOD_MAX_RETRIES || config.get('flood.maxRetries');
 
+  //this corresponds to the folder structure stored in blob storag
+  //(ie. the logical folder where screenshots are stored)
   static flood_screenshotsSubfolderName = 'screenshots';
 }
