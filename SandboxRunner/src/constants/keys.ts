@@ -13,6 +13,8 @@ export class Keys {
     process.env.FLOOD_MAXALLOWEDSCREENSHOTS ||
     config.get("flood.maximumAllowedScreenshots");
   static testResultFolderName = "testResult";
+  static testScreenshotFolderName = "screenshots";
+  static testType = process.env.FLOOD_TEST_TYPE || config.get("flood.testType");
 
   /*Azure Storage Settings*/
   static azure_storageAccountName =

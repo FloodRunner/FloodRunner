@@ -1,9 +1,15 @@
+export enum TestType {
+  Puppeteer = "puppeteer",
+  Element = "element",
+}
+
 export interface CreateFloodTest {
   userId: string;
   name: string;
   description: string;
   interval: number;
   testScript: any;
+  type: TestType;
 }
 
 export function createFloodTestDto() {
@@ -13,6 +19,7 @@ export function createFloodTestDto() {
     description: "",
     interval: 60,
     testScript: null,
+    type: TestType.Puppeteer,
   };
   return newTest;
 }
@@ -24,6 +31,7 @@ export interface FloodTest {
   uri: string;
   description: string;
   interval: number;
+  type: TestType;
   resultOverview: FloodTestResultOverview;
 }
 

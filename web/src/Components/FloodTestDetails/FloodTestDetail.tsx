@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "../../Contexts/auth0-context";
 import { useFloodRunner } from "../../Contexts/floodrunner-context";
-import { FloodTest, FloodTestResultSummary } from "../../Models/Api/FloodTest";
+import {
+  FloodTest,
+  FloodTestResultSummary,
+  TestType,
+} from "../../Models/Api/FloodTest";
 import { Label, Segment, Header } from "semantic-ui-react";
 import { Card, Button, Icon } from "semantic-ui-react";
 import moment from "moment";
@@ -142,6 +146,10 @@ function FloodTestDetail(props) {
     return moment(lastTimeRan).format("HH:mm DD/MM/YYYY");
   };
 
+  const renderTestType = (testType: TestType) => {
+    return testType.charAt(0).toUpperCase() + testType.slice(1);
+  };
+
   const renderTooltip = ({ payload, label, active }) => {
     const toolTipDataPayload: any = _.first(payload);
     if (!toolTipDataPayload) return;
@@ -169,7 +177,7 @@ function FloodTestDetail(props) {
 
   interface Data {
     date: string;
-    value: number;
+    value: string;
     isSuccessful: boolean;
     appLogUri: string;
     screenshotUris: string[];
@@ -242,7 +250,7 @@ function FloodTestDetail(props) {
     var data: Data[] = summaries.map((summary) => {
       return {
         date: moment(summary.runOn.toString()).format("HH:mm"),
-        value: 2, //hard coding execution time for now
+        value: "2", //hard coding execution time for now
         isSuccessful: summary.isSuccessful,
         appLogUri: _.find(summary.logFileUris, function (f) {
           return f.includes("app.log");
@@ -344,13 +352,16 @@ function FloodTestDetail(props) {
             {renderTestStatus(floodTest.resultOverview.isPassing)}
           </Card.Description>
           <Card.Description>
-            Interval: {floodTest.interval} minutes
+            Interval: <strong>{floodTest.interval} minutes</strong>
           </Card.Description>
           <Card.Description>
             Last Run:{" "}
             <strong>
               {renderLastTimeRan(floodTest.resultOverview?.lastRun?.toString())}
             </strong>
+          </Card.Description>
+          <Card.Description>
+            Test Type: <strong>{renderTestType(floodTest.type)}</strong>
           </Card.Description>
         </Card.Content>
         <Card.Content>{renderGraph(floodTestResultSummaries)}</Card.Content>

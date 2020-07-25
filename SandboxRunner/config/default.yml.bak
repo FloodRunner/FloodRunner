@@ -1,5 +1,6 @@
 flood:
   testId: <testId>
+  testType: "<puppeteer | element >"
   maximumAllowedScreenshots: <maximumAllowedScreenshots>
   maxRetries: <maxRetries>
 

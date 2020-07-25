@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import * as ApiClient from 'kubernetes-client';
 import { TestResultDto } from '../dtos/test-result.dto';
 import { Keys } from '../../constants/keys';
+import { TestType } from '../../common/enums/test-types.enum';
 const Client = ApiClient.Client1_13;
 const client = new Client({ version: '1.13' });
 const jobManifestName = 'floodrunner-sandbox-job.yaml';
@@ -29,10 +30,14 @@ export class FloodTestJobService {
     private readonly fileService: FileService,
   ) {
     this._logger.log('Registering queue callback functions');
+
+    //queue listener for kicking off sandboxrunner job
     this.queueService.registerQueueListener(
       queueService.agendaJobQueueName,
       this.startFloodElementTestRun,
     );
+
+    //queue listener for listening to result of sandboxrunner job
     this.queueService.registerQueueListener(
       queueService.elementQueueName,
       this.processFloodElementTestRun,
@@ -48,12 +53,17 @@ export class FloodTestJobService {
   private replaceEnvironmentVariables(
     manifest: string,
     testId: string,
+    testType: TestType,
     testRunName: string,
   ): string {
     var tokenReplacementMapping = [
       {
         token: '__FLOOD_TESTID__',
         tokenValue: testId,
+      },
+      {
+        token: '__FLOOD_TEST_TYPE__',
+        tokenValue: testType.toString(),
       },
       {
         token: '__FLOOD_MAX_RETRIES__',
@@ -99,6 +109,9 @@ export class FloodTestJobService {
   startFloodElementTestRun = async (testId: string) => {
     this._logger.log(`Starting flood element test run, id: ${testId}`);
 
+    //find associated test to get test type (could be improved by sending type in message)
+    const testType = (await this.floodTestModel.findById(testId)).type;
+
     //create a test summary object
     const runOn = moment.utc();
     const testRunName = runOn.format('YYYY-MM-DDTH:mmZ');
@@ -112,6 +125,7 @@ export class FloodTestJobService {
         isSuccessful: null,
         logFileUri: null,
         runOn: runOnDate,
+        type: testType ?? TestType.Element,
       });
 
       //persist flood test summary
@@ -136,6 +150,7 @@ export class FloodTestJobService {
     var modifiedJobManifestYaml = this.replaceEnvironmentVariables(
       jobManifestYaml,
       testId,
+      createdFloodTestSummary.type,
       createdFloodTestSummary.testRunName,
     );
 

@@ -16,7 +16,11 @@ spec:
             path: "/var/run/docker.sock"
       containers:
         - name: floodrunner-sandboxrunner
-          image: jellydock/floodrunner-sandboxrunner
+          image: jellydock/floodrunner-sandboxrunner:v2
+          securityContext:
+              capabilities:
+                add:
+                  - "SYS_ADMIN"
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -25,6 +29,8 @@ spec:
           env:
             - name: FLOOD_TESTID
               value: __FLOOD_TESTID__
+            - name: FLOOD_TEST_TYPE
+              value: __FLOOD_TEST_TYPE__
             - name: FLOOD_MAX_RETRIES
               value: "__FLOOD_MAX_RETRIES__"
             - name: FLOOD_MAXALLOWEDSCREENSHOTS

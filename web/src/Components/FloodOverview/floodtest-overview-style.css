@@ -5,3 +5,23 @@
 .addTestBtn {
   margin: 15px 15px 15px 0px !important;
 }
+
+.test-type-container {
+  text-align: center;
+}
+
+.test-type-active {
+  border: 2px solid #6415FF !important;
+}
+
+.puppeteer-label {
+  background-color: #00D59D !important;
+  border-color: #00D59D !important;
+  color: #fff !important;
+}
+
+.element-label {
+  background-color: #7D70CF !important;
+  border-color: #7D70CF !important;
+  color: #fff !important;
+}

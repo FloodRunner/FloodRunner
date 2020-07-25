@@ -29,19 +29,32 @@ export class RabbitQueueService implements IQueueService {
     }
   }
 
+  /**
+   * Sends message to agendaJobQueueName queue
+   * @param message the message to be sent to the queue
+   */
   sendQueueMessage(message: string): void {
-    this._logger.log(
-      `Sending message: ${message} to queue: ${this.agendaJobQueueName}`,
-    );
-    const msg = new Amqp.Message(message);
-    this._agendaQueue.send(msg);
+    try {
+      this._logger.log(
+        `Sending message: ${message} to queue: ${this.agendaJobQueueName}`,
+      );
+      const msg = new Amqp.Message(message);
+      this._agendaQueue.send(msg);
+    } catch (err) {
+      this._logger.error(err);
+    }
   }
 
+  /**
+   * Registers a queue callback function
+   * @param queueName the name of queue you want to register a listener on
+   * @param callbackFunction the function to run when a message is received
+   */
   registerQueueListener(
     queueName: string,
     callbackFunction: (message: string) => void,
   ) {
-    this._logger.log(`Registering queue callback function`);
+    this._logger.debug(`Registering queue callback function`);
 
     const queue = this._connection.declareQueue(queueName);
     queue.activateConsumer(

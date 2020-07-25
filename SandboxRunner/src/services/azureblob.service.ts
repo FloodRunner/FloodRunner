@@ -26,7 +26,7 @@ export class AzureblobService implements IFileService {
   private _testDirectory = path.join(__dirname, `../testScripts`);
   private _logDirectory = path.join(__dirname, `../../logs`);
   private _testResultDirectory = path.join(__dirname, `../../testResult`);
-  private _screenshotDirectoryName = "screenshots"; //this is a element script convention
+  private _screenshotDirectoryName = Keys.testScreenshotFolderName; //this is a element script convention
   private _maximumScreenshotsAllowed = Keys.maximumAllowedScreenshots;
 
   public createTestScriptPath(id: string): string {
@@ -69,6 +69,9 @@ export class AzureblobService implements IFileService {
 
     //create directory
     if (!fs.existsSync(this._testDirectory)) {
+      systemLogger.info(
+        `Creating directory for downloaded test: ${this._testDirectory}`
+      );
       fs.mkdirSync(this._testDirectory);
     }
 

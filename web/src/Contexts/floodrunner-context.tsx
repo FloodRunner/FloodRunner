@@ -164,6 +164,7 @@ export class FloodRunnerProvider extends Component<{}, IState> {
       formData.append("description", createTestDto.description);
       formData.append("interval", createTestDto.interval.toString());
       formData.append("testScript", createTestDto.testScript);
+      formData.append("type", createTestDto.type);
       const floodRunnerClient = await this.createFloodRunnerClient();
       const response = await floodRunnerClient.post(`/floodtest`, formData, {
         headers: {
