@@ -79,6 +79,7 @@ export class AzureblobService implements IFileService {
     const testScriptName = this.createTestScriptPath(id);
     const testFilePath = path.join(this._testDirectory, testScriptName);
 
+    systemLogger.info(`Saving file: ${testScriptName} to ${testFilePath}`);
     fs.writeFileSync(testFilePath, testScript);
 
     return testScript;

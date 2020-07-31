@@ -81,7 +81,7 @@ export class FloodtestController {
         fileSize: Constants.MaxSizeInBytes,
       },
       fileFilter: function(req, file, cb) {
-        if (!file.originalname.match(/\.(ts)$/)) {
+        if (!file.originalname.match(/\.(ts|js)$/)) {
           return cb(
             new Error('File upload error, only ts files are allowed.'),
             false,
@@ -177,7 +177,7 @@ export class FloodtestController {
         fileSize: Constants.MaxSizeInBytes,
       },
       fileFilter: function(req, file, cb) {
-        if (!file.originalname.match(/\.(ts)$/)) {
+        if (!file.originalname.match(/\.(ts|js)$/)) {
           return cb(
             new Error('File upload error, only ts files are allowed.'),
             false,

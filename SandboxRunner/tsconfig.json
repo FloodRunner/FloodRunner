@@ -71,6 +71,7 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": [
-    "**/testscript*.ts"
+    "**/testscript*.ts",
+    "**/src/floodTests/amazon_puppeteer.ts"
   ]
 }

@@ -73,6 +73,11 @@ const runFloodTest = (testScript: string) =>
 const runPuppeteerTest = (testScript: string) =>
   new Promise((resolve, reject) => {
     try {
+      process.on("unhandledRejection", (err) => {
+        systemLogger.info(`unhandledRejection error: ${err}`);
+        process.exit();
+      });
+
       var puppeteerScript = fs.readFileSync(`${testScript}`, {
         encoding: "utf-8",
       });
@@ -87,24 +92,78 @@ const runPuppeteerTest = (testScript: string) =>
 
       process.chdir(puppeteerWorkingDirectory);
 
-      var wrappedPuppeteerCode = `
-      module.exports = async function (callback) {
-          (async () => {
-            try{
-              console.log("running script")
-              ${puppeteerScript}
-  
-              \n callback()
-            }catch(err){
-              console.log("thrown script")
-              console.log(err)
-              callback()
-            }
-          })()
-      }
-    `;
+      //manipulate script and wrap
+      let closeBrowserOrPageCall = "browser.close();";
 
-      let puppeteerSandbox = vm.run(wrappedPuppeteerCode, "vm.js");
+      // if (
+      //   puppeteerScript.match(/file:/g) ||
+      //   puppeteerScript.match(/metadata\.google\.internal/g)
+      // ) {
+      //   throw new Error("Sorry. Cannot access that URL.");
+      // }
+
+      // const lines = puppeteerScript.split("\n");
+      // const pageCreationLine = lines.findIndex((line) =>
+      //   line.includes(".newPage(")
+      // );
+
+      // if (pageCreationLine != -1) {
+      //   systemLogger.info(`Adding Puppeteer page events`);
+      //   const targetWatchCode = `
+      //   page.on('request', (request) => {
+      //     if (request.url().startsWith('file://')) {
+      //       page.browser().close();
+      //     }
+      //   });
+
+      //   page.on('response', (response) => {
+      //     if (response.url().startsWith('file://')) {
+      //       page.browser().close();
+      //     }
+      //   });
+      // `;
+
+      //   lines.splice(pageCreationLine + 1, 0, targetWatchCode);
+      //   puppeteerScript = lines.join("\n");
+      // }
+
+      // puppeteerScript = puppeteerScript.replace(
+      //   /\.launch\([\w\W]*?\)/g,
+      //   ".launch({headless: false})"
+      // );
+
+      puppeteerScript = `
+          module.exports = async function (callback) {
+            console.log("starting")
+            const log = [];
+        
+            // Define inline functions and capture user console logs.
+            const logger = (...args) => log.push(args);
+            console.log = logger;
+            console.info = logger;
+            console.warn = logger;
+
+            // Wrap user code in an async function so async/await can be used out of the box.
+            (async() => {
+              ${puppeteerScript} // user's code
+        
+              // Attempt to close the page/browser even if the regex fails to catch the
+              // call. This assumes they've used a var called "page" or "browser".
+              try {
+                console.log("closing browser")
+                await ${closeBrowserOrPageCall}
+                callback()
+              } catch (err) {
+                // noop
+                callback()
+              }
+            })();
+          }
+      `;
+
+      systemLogger.info(puppeteerScript);
+
+      let puppeteerSandbox = vm.run(puppeteerScript, "vm.js");
       puppeteerSandbox(() => {
         applicationLogger.info("----Puppeteer script completed---");
         resolve();

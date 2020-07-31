@@ -4,7 +4,7 @@ import { Form, Button, Icon, Message, Image } from "semantic-ui-react";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Modal from "../Shared/Modal/Modal";
-import { CreateFloodTest } from "../../Models/Api/FloodTest";
+import { CreateFloodTest, TestType } from "../../Models/Api/FloodTest";
 import _ from "lodash";
 import history from "../../Utils/history";
 import elementLogo from "../../images/script_types/flood_element.png";
@@ -19,7 +19,8 @@ interface IProps {
 
 const FILE_SIZE = 50000;
 const SUPPORTED_FORMATS = ["text/plain", "video/mp2ts"];
-const SUPPORED_EXT = ["ts"];
+const ELEMENT_SUPPORTED_EXT = ["ts"];
+const PUPPETEER_SUPPORTED_EXT = ["ts"];
 
 const FloodCreateForm = ({
   createFloodTest,
@@ -127,7 +128,9 @@ const FloodCreateForm = ({
           .test("script-fileExt", "Unsupported file type", (value) =>
             value == null
               ? false
-              : SUPPORED_EXT.includes(value.name.split(".").pop())
+              : selectedTestType === TestType.Element
+              ? ELEMENT_SUPPORTED_EXT.includes(value.name.split(".").pop())
+              : PUPPETEER_SUPPORTED_EXT.includes(value.name.split(".").pop())
           ),
       })}
       onSubmit={async (values, actions) => {
@@ -209,7 +212,9 @@ const FloodCreateForm = ({
 
                   <Form.Input
                     required
-                    label="Test Script (.ts file)"
+                    label={`Test Script (${
+                      selectedTestType === TestType.Element ? ".ts" : ".ts"
+                    } file)`}
                     fluid
                     type="file"
                     name="script"
