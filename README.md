@@ -7,6 +7,9 @@
   <a aria-label="Licence" href="/LICENSE">
     <img alt="" src="https://img.shields.io/badge/LICENCE-APACHE%202.0-4285f4?style=for-the-badge&labelColor=000000">
   </a>
+   <a aria-label="Try it now" href="https://app.floodrunner.dev">
+    <img alt="" src="https://img.shields.io/badge/TRY %20IT%20NOW-6415FF?style=for-the-badge&labelColor=6415FF">
+  </a>
 </p>
 
 ---
