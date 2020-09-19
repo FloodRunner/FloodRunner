@@ -7,7 +7,6 @@ import { RabbitQueueService } from "./services/rabbit-queue.service";
 import { TestType } from "./constants/test-type.enum";
 
 let testsPassedSuccessfully: boolean = false;
-
 //remove all old results and logs
 systemLogger.info(`--- Cleaning up all old files ---`);
 fileCleanup();
