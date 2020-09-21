@@ -3,4 +3,5 @@ export interface TestResultDto {
   testRunName: string;
   isSuccessful: boolean;
   numberTimesExecuted: number;
+  executionTimeInSeconds: number;
 }

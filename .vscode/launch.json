@@ -11,7 +11,7 @@
       "skipFiles": ["<node_internals>\\**"],
       "program": "${workspaceFolder}\\SandboxRunner\\build\\index.js",
       "env": {
-        "NODE_ENV": "DEV"
+        "NODE_ENV": "DEBUG"
       },
       "cwd": "${workspaceFolder}\\SandboxRunner",
       "outFiles": ["${workspaceFolder}\\SandboxRunner\\build\\**\\*.js"]

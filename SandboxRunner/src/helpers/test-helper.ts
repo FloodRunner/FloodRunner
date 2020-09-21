@@ -42,6 +42,7 @@ async function runTests(floodTests: string[], testType: TestType) {
 
     //get around transient failures by rerunning failed tests
     var numTimesRan = 0;
+    var executionTimeInSeconds = -1;
 
     while (
       numTimesRan < Keys.flood_maximumRetries &&
@@ -50,12 +51,18 @@ async function runTests(floodTests: string[], testType: TestType) {
       systemLogger.info(`--- Running test: ${test} ---`);
 
       try {
+        var startTime = process.hrtime();
+
         if (testType === TestType.Element) {
           await elementRunner.runElementTest(test);
         } else if (testType === TestType.Puppeteer) {
           await puppeteerRunner.runPuppeteerTest(test);
           process.chdir(presentWorkingDirectory);
         }
+
+        executionTimeInSeconds = parseHrtimeToSeconds(
+          process.hrtime(startTime)
+        );
 
         testSuccessful = true;
         systemLogger.info(`--- Test successful: ${test} ---`);
@@ -73,10 +80,16 @@ async function runTests(floodTests: string[], testType: TestType) {
       name: test,
       isSuccessful: testSuccessful,
       numberTimesExecuted: numTimesRan,
+      executionTimeInSeconds: executionTimeInSeconds,
     });
   }
 
   return testResults;
+}
+
+function parseHrtimeToSeconds(hrtime): number {
+  var seconds = hrtime[0] + hrtime[1] / 1e9;
+  return Math.round(seconds);
 }
 
 export default {

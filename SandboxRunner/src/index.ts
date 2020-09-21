@@ -1,6 +1,6 @@
-import { applicationLogger, systemLogger } from "./helpers/logger";
+import { systemLogger } from "./helpers/logger";
 import fileCleanup from "./helpers/file-helper";
-import testHelpers from "./helpers/element-test-helper";
+import testHelpers from "./helpers/test-helper";
 import { AzureblobService } from "./services/azureblob.service";
 import { Keys } from "./constants/keys";
 import { RabbitQueueService } from "./services/rabbit-queue.service";
@@ -19,7 +19,7 @@ const queueService = new RabbitQueueService();
 
 // register tests to run
 const sourcePath = process.env.NODE_ENV == "DEV" ? "src" : "build";
-const floodTests = [
+const tests = [
   `./${sourcePath}/testScripts/${azureBlobService.createTestScriptPath(
     Keys.testId
   )}`,
@@ -36,7 +36,7 @@ systemLogger.info(`--- Starting ${testType} test ---`);
   await azureBlobService.downloadFile(Keys.testId);
 
   //run test
-  const testResults = await testHelpers.runFloodTests(floodTests, testType);
+  const testResults = await testHelpers.runTests(tests, testType);
 
   //log results
   testHelpers.logResults(testResults);

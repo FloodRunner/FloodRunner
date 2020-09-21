@@ -33,6 +33,7 @@ export class RabbitQueueService implements IQueueService {
       testRunName: Keys.azure_containerFolderName,
       isSuccessful: testResult.isSuccessful,
       numberTimesExecuted: testResult.numberTimesExecuted,
+      executionTimeInSeconds: testResult.executionTimeInSeconds,
     };
     var stringMessage = JSON.stringify(message);
     systemLogger.info(
