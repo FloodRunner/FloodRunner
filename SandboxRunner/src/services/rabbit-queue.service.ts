@@ -12,7 +12,6 @@ export class RabbitQueueService implements IQueueService {
   constructor() {
     try {
       this._connection = new Amqp.Connection(Keys.rabbitmq_connectionString);
-      console.log(Keys.rabbitmq_connectionString);
       this._elementQueue = this._connection.declareQueue(
         Keys.rabbitmq_queueName
       );
