@@ -60,10 +60,6 @@ async function runTests(floodTests: string[], testType: TestType) {
           process.chdir(presentWorkingDirectory);
         }
 
-        executionTimeInSeconds = parseHrtimeToSeconds(
-          process.hrtime(startTime)
-        );
-
         testSuccessful = true;
         systemLogger.info(`--- Test successful: ${test} ---`);
       } catch (err) {
@@ -72,6 +68,10 @@ async function runTests(floodTests: string[], testType: TestType) {
         testSuccessful = false;
       } finally {
         numTimesRan++;
+
+        executionTimeInSeconds = parseHrtimeToSeconds(
+          process.hrtime(startTime)
+        );
       }
     }
 
