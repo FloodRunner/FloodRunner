@@ -17,6 +17,9 @@ export class FloodTestResultSummary extends Document {
   isCompleted: boolean;
 
   @Prop({ required: false })
+  executionTimeInSeconds: number;
+
+  @Prop({ required: false })
   isSuccessful: boolean;
 
   @Prop({ type: [String], required: false })

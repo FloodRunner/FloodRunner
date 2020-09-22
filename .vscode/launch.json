@@ -15,6 +15,18 @@
       },
       "cwd": "${workspaceFolder}\\SandboxRunner",
       "outFiles": ["${workspaceFolder}\\SandboxRunner\\build\\**\\*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "API Debug",
+      "skipFiles": ["<node_internals>\\**"],
+      "program": "${workspaceFolder}\\api\\dist\\main.js",
+      "env": {
+        "NODE_ENV": "develop"
+      },
+      "cwd": "${workspaceFolder}\\api",
+      "outFiles": ["${workspaceFolder}\\api\\dist\\**\\*.js"]
     }
   ]
 }

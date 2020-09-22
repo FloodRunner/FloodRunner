@@ -20,7 +20,8 @@ Currently the container only supports downloading the test script and uploading 
 
 ### Building docker image
 
-The image can be built using the Dockerfile with `docker build -f Dockerfile -t jellydock/floodrunner-sandboxrunner .` . This will build the container with default environment variables:
+**NB** Specify the version you want to push as the tag
+The image can be built using the Dockerfile with `docker build -f Dockerfile -t jellydock/floodrunner-sandboxrunner:v3 .` . This will build the container with default environment variables:
 
 - NODE_ENV = "Production"
 - MAX_RETRIES = 3
@@ -30,7 +31,8 @@ To override these values you can pass the build arguments `NodeEnvironment` and 
 
 ### Pushing docker image
 
-The image can be pushed to DockerHub using the command `docker push jellydock/floodrunner-sandboxrunner`
+**NB** Specify the version you want to push as the tag
+The image can be pushed to DockerHub using the command `docker push jellydock/floodrunner-sandboxrunner:v3`
 
 ### Running docker container (standalone mode)
 

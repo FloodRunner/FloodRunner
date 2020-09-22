@@ -1,3 +1,6 @@
+/**
+ * Dto used by the FloodRunner web project for displaying test summaries
+ */
 export class FloodTestResultSummaryDto {
   readonly testId: string;
   readonly testRunName: string;
