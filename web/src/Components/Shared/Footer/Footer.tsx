@@ -10,8 +10,7 @@ function Footer() {
       <Container textAlign="center">
         <Image centered src={logoSrc} className="floodrunner-footer-logo" />
         <p style={{ paddingTop: "5px" }}>
-          We're currently in Beta. Contact {supportEmailAddress} for support or
-          feedback
+          Contact {supportEmailAddress} for support or feedback.
         </p>
         <List horizontal inverted divided link size="small">
           <List.Item as="a" href="/legal/termsofservice">

@@ -24,7 +24,7 @@ The process of using FloodRunner is simple and easy:
 
 - <strong>Schedule browser tests</strong>: Easily schedule your browser tests to ensure your application is being continously tested.
 - <strong>Multiple scripting frameworks</strong>: Supports both [Puppeteer](https://pptr.dev/) and [Element](https://element.flood.io/) scripts.
-- <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots and execution time (coming soon).
+- <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots and execution time.
 - <strong>Integrate with Flood.io (coming soon)</strong>: Leverage Flood.io to run your scripts as load tests (applies to Element scripts only)
 - <strong>Secure login and API authorization</strong>: Secured using Auth0.com ensuring that login is secure and that data is completely isolated between users.
 - <strong>Cloud native</strong>: Components are dockerized and designed to run in Kubernetes, including all relevant configuration scripts needed for deployment and configuration.

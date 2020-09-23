@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=DEV nodemon build/index.js",
     "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/index.js"
+    "start": "npm run build && node build/index.js",
+    "watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",

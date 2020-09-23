@@ -13,14 +13,14 @@ spec:
       volumes:
         - name: dockervolume
           hostPath:
-            path: "/var/run/docker.sock"
+            path: '/var/run/docker.sock'
       containers:
         - name: floodrunner-sandboxrunner
-          image: jellydock/floodrunner-sandboxrunner:v2
+          image: jellydock/floodrunner-sandboxrunner:v3
           securityContext:
-              capabilities:
-                add:
-                  - "SYS_ADMIN"
+            capabilities:
+              add:
+                - 'SYS_ADMIN'
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -32,9 +32,9 @@ spec:
             - name: FLOOD_TEST_TYPE
               value: __FLOOD_TEST_TYPE__
             - name: FLOOD_MAX_RETRIES
-              value: "__FLOOD_MAX_RETRIES__"
+              value: '__FLOOD_MAX_RETRIES__'
             - name: FLOOD_MAXALLOWEDSCREENSHOTS
-              value: "__FLOOD_MAXALLOWEDSCREENSHOTS__"
+              value: '__FLOOD_MAXALLOWEDSCREENSHOTS__'
             - name: AZURESTORAGE_ACCOUNTNAME
               value: __AZURESTORAGE_ACCOUNTNAME__
             - name: AZURESTORAGE_ACCESSKEY

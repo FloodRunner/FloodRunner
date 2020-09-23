@@ -45,6 +45,7 @@ export interface FloodTestResultSummary {
   testRunName: string;
   isCompleted: boolean;
   isSuccessful: boolean;
+  executionTimeInSeconds: number;
   logFileUris: string[];
   screenShotUris: string[];
   runOn: Date;

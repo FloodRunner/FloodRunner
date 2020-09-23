@@ -122,6 +122,7 @@ export class FloodTestJobService {
         testId: testId,
         testRunName: testRunName,
         isCompleted: null,
+        executionTimeInSeconds: -1,
         isSuccessful: null,
         logFileUri: null,
         runOn: runOnDate,
@@ -196,6 +197,7 @@ export class FloodTestJobService {
         screenShotUris: testResults.screenShotUris,
         isCompleted: true,
         isSuccessful: testResultDto.isSuccessful,
+        executionTimeInSeconds: testResultDto.executionTimeInSeconds,
       },
     };
     var testSummary = await this.floodTestResultSummaryModel.findOneAndUpdate(

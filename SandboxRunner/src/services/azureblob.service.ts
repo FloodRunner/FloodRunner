@@ -60,9 +60,14 @@ export class AzureblobService implements IFileService {
     const blobName = this.createTestScriptPath(id);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    var downloadBlockBlobResponse: BlobDownloadResponseModel = await blockBlobClient.download(
-      0
-    );
+    try {
+      var downloadBlockBlobResponse: BlobDownloadResponseModel = await blockBlobClient.download(
+        0
+      );
+    } catch (e) {
+      throw new Error(`Test script: ${blobName} does not exist`);
+    }
+
     var testScript: string = await this.streamToString(
       downloadBlockBlobResponse.readableStreamBody
     );

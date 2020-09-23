@@ -7,6 +7,7 @@ flood:
 azure-storage:
   accountName: <accountName>
   accessKey: <accessKey>
+  containerFolderName: <container folder name>
 
 rabbitmq:
   connectionString: <connectionString>
