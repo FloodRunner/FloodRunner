@@ -15,6 +15,8 @@ interface ContextValueType {
   ) => Promise<FloodTestResultSummary[]>;
   getTestById?: (testId: string) => Promise<FloodTest>;
   getTestLogs?: (logUri: string) => Promise<string>;
+  setTestLogs?: (logs: string) => void;
+  setScreenshotUris?: (screenshotUris: string[]) => void;
   downloadTestScript?: (testId: string) => Promise<string>;
   downloadTestFile?: (testName: string, testUri: string) => void;
   deleteTestById?: (testId: string) => Promise<void>;
@@ -29,6 +31,8 @@ export const useFloodRunner: any = () => useContext(FloodRunnerContext);
 
 interface IState {
   tests: any;
+  screenshotUris: string[];
+  appLogs: string;
 }
 
 //create a provider
@@ -37,6 +41,8 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     super(props);
     this.state = {
       tests: null,
+      screenshotUris: [],
+      appLogs: null,
     };
   }
   static contextType = Auth0Context;
@@ -116,6 +122,14 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     }
   };
 
+  setTestLogs = (logs: string): void => {
+    this.setState({ appLogs: logs });
+  };
+
+  setScreenshotUris = (screenshotUris: string[]): void => {
+    this.setState({ screenshotUris: screenshotUris });
+  };
+
   downloadTestScript = async (testId: string): Promise<string> => {
     try {
       const floodRunnerClient = await this.createFloodRunnerClient();
@@ -179,15 +193,20 @@ export class FloodRunnerProvider extends Component<{}, IState> {
   };
 
   render() {
-    const { tests } = this.state;
+    const { tests, appLogs, screenshotUris } = this.state;
     const { children } = this.props;
 
     const configObject = {
+      appLogs,
+      screenshotUris,
       getAllTests: () => this.getAllTests(),
       getTestResultSummariesById: (testId: string) =>
         this.getTestResultSummariesById(testId),
       getTestById: (testId: string) => this.getTestById(testId),
       getTestLogs: (logUri: string) => this.getTestLogs(logUri),
+      setTestLogs: (logs: string) => this.setTestLogs(logs),
+      setScreenshotUris: (screenshotUris: string[]) =>
+        this.setScreenshotUris(screenshotUris),
       downloadTestScript: (testId: string) => this.downloadTestScript(testId),
       downloadTestFile: (testName: string, testUri: string) =>
         this.downloadTestFile(testName, testUri),
