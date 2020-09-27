@@ -3,6 +3,11 @@ export enum TestType {
   Element = "element",
 }
 
+export enum TestUploadType {
+  File = "file",
+  Script = "script",
+}
+
 export interface CreateFloodTest {
   userId: string;
   name: string;

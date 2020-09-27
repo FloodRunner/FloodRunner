@@ -1,15 +1,25 @@
 import React, { useState } from "react";
-import { useFloodRunner } from "../../Contexts/floodrunner-context";
 import { Form, Button, Icon, Message, Image } from "semantic-ui-react";
-import { Formik } from "formik";
+import { Formik, ErrorMessage } from "formik";
+import { UnControlled as CodeMirror } from "react-codemirror2";
 import * as yup from "yup";
-import Modal from "../Shared/Modal/Modal";
-import { CreateFloodTest } from "../../Models/Api/FloodTest";
 import _ from "lodash";
+import { useFloodRunner } from "../../Contexts/floodrunner-context";
+import Modal from "../Shared/Modal/Modal";
+import {
+  CreateFloodTest,
+  TestType,
+  TestUploadType,
+} from "../../Models/Api/FloodTest";
 import history from "../../Utils/history";
 import elementLogo from "../../images/script_types/flood_element.png";
 import puppeteerLogo from "../../images/script_types/puppeteer.png";
 import "./floodtest-overview-style.css";
+import TestScriptModal from "../FloodTestDetails/TestScriptModal";
+
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/material.css";
+require("codemirror/mode/javascript/javascript");
 
 interface IProps {
   createFloodTest: CreateFloodTest;
@@ -27,7 +37,12 @@ const FloodCreateForm = ({
   maximumTestsReached,
 }: IProps) => {
   const { createTest } = useFloodRunner();
-  const [selectedTestType, setSelectedTestType] = useState<string>("puppeteer");
+  const [selectedTestType, setSelectedTestType] = useState<string>(
+    createFloodTest.type
+  );
+  const [selectedUploadType, setSelectedUploadType] = useState<string>(
+    TestUploadType.Script
+  );
 
   const renderBetaWarning = () => {
     return (
@@ -46,35 +61,43 @@ const FloodCreateForm = ({
     return (
       <div className="test-type-container">
         <Button
-          id="puppeteerBtn"
-          className={selectedTestType === "puppeteer" ? "test-type-active" : ""}
+          id={`${TestType.Puppeteer}Btn`}
+          className={
+            selectedTestType === TestType.Puppeteer ? "test-type-active" : ""
+          }
           basic
           required
           type="button"
           onClick={(e) => {
             e.preventDefault();
-            setSelectedTestType("puppeteer");
-            setFieldValue(field, "puppeteer");
+            setSelectedTestType(TestType.Puppeteer);
+            setFieldValue(field, TestType.Puppeteer);
           }}
         >
           <Image src={puppeteerLogo} size="tiny" />
         </Button>
         <Button
-          id="elementBtn"
-          className={selectedTestType === "element" ? "test-type-active" : ""}
+          id={`${TestType.Element}Btn`}
+          className={
+            selectedTestType === TestType.Element ? "test-type-active" : ""
+          }
           basic
           required
           type="button"
           onClick={(e) => {
             e.preventDefault();
-            setSelectedTestType("element");
-            setFieldValue(field, "element");
+            setSelectedTestType(TestType.Element);
+            setFieldValue(field, TestType.Element);
           }}
         >
           <Image src={elementLogo} size="small" />
         </Button>
       </div>
     );
+  };
+
+  const upperCaseFirstLetter = (s: string): string => {
+    return s.charAt(0).toUpperCase() + s.slice(1);
   };
 
   return (
@@ -84,7 +107,8 @@ const FloodCreateForm = ({
         description: createFloodTest.description,
         interval: createFloodTest.interval,
         type: createFloodTest.type,
-        script: null,
+        testFile: null,
+        testScript: null, //might want to take this in from the model later for editing
       }}
       validationSchema={yup.object().shape({
         name: yup
@@ -106,53 +130,74 @@ const FloodCreateForm = ({
             }
           )
           .required("Interval is required"),
-        script: yup
+        testFile: yup
           .mixed()
-          .required("Please upload a test script")
+          .test(`testFile-required`, `Please upload a test file`, (value) => {
+            return selectedUploadType != TestUploadType.File
+              ? true
+              : value != null;
+          })
           .test(
-            "script-fileSize",
+            "testFile-fileSize",
             `File size too large (max size is 50Kb)`,
-            (value) => (value == null ? false : value.size <= FILE_SIZE)
+            (value) => {
+              return selectedUploadType != TestUploadType.File
+                ? true
+                : value == null
+                ? false
+                : value.size <= FILE_SIZE;
+            }
           )
-          // .test(
-          //   "script-fileType",
-          //   `Unsupported file format (only "text/plain" and "video/mp2ts" supported)`,
-          //   (value) => {
-          //     console.log(value.type);
-          //     return value == null
-          //       ? false
-          //       : SUPPORTED_FORMATS.includes(value.type);
-          //   }
-          // )
-          .test("script-fileExt", "Unsupported file type", (value) =>
-            value == null
+          .test("testFile-fileExt", "Unsupported file type", (value) => {
+            return selectedUploadType != TestUploadType.File
+              ? true
+              : value == null
               ? false
-              : SUPPORED_EXT.includes(value.name.split(".").pop())
+              : SUPPORED_EXT.includes(value.name.split(".").pop());
+          }),
+        testScript: yup
+          .string()
+          .test(
+            `testScript-required`,
+            `Please upload a test script`,
+            (value) => {
+              return selectedUploadType != TestUploadType.Script
+                ? true
+                : value != null;
+            }
           ),
       })}
       onSubmit={async (values, actions) => {
+        console.log(selectedUploadType); //this will be used to select the file or convert to a file
+        console.log(values.testScript);
+
+        //the user has input a script, convert to a file for upload
+        if (selectedUploadType == TestUploadType.Script) {
+        }
+
         var createTestDto: CreateFloodTest = {
           name: values.name,
           description: values.description,
           interval: values.interval,
-          testScript: values.script,
+          testScript: values.testFile,
           type: values.type,
           userId: null,
         };
-
-        await createTest(createTestDto);
+        console.log(createTestDto);
+        // await createTest(createTestDto);
         actions.setSubmitting(false);
-        closeModal();
-        history.go(0); //reload page to show new test
+        // closeModal();
+        // history.go(0); //reload page to show new test
       }}
       render={({
-        values,
         errors,
-        handleChange,
         handleSubmit,
         isSubmitting,
         dirty,
         setFieldValue,
+        getFieldProps,
+        touched,
+        values,
       }) => (
         <Modal
           title="Create browser test"
@@ -161,63 +206,108 @@ const FloodCreateForm = ({
               renderBetaWarning()
             ) : (
               <>
-                {errors.name && <Message error content={errors.name} />}
-                {errors.description && (
+                {touched.name && errors.name && (
+                  <Message error content={errors.name} />
+                )}
+                {touched.description && errors.description && (
                   <Message error content={errors.description} />
                 )}
-                {errors.interval && <Message error content={errors.interval} />}
-                {errors.script && <Message error content={errors.script} />}
+                {touched.interval && errors.interval && (
+                  <Message error content={errors.interval} />
+                )}
+                {touched.testFile && errors.testFile && (
+                  <Message error content={errors.testFile} />
+                )}
+                {touched.testScript && errors.testScript && (
+                  <Message error content={errors.testScript} />
+                )}
 
                 <Form loading={isSubmitting} onSubmit={handleSubmit}>
                   <Form.Input
                     required
+                    id="name"
                     label="Name"
                     fluid
-                    type="text"
-                    name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    error={errors.name !== undefined}
+                    {...getFieldProps("name")}
                   />
                   <Form.TextArea
-                    label="Description"
-                    type="text"
-                    name="description"
                     required
-                    value={values.description}
-                    onChange={handleChange}
+                    label="Description"
+                    id="description"
+                    {...getFieldProps("description")}
                     rows={1}
-                    error={errors.description !== undefined}
                   />
                   <Form.Input
                     required
                     label="Interval (minutes)"
+                    id="interval"
                     fluid
-                    type="text"
-                    name="interval"
-                    value={values.interval}
-                    onChange={handleChange}
-                    error={errors.interval !== undefined}
+                    {...getFieldProps("interval")}
                   />
                   <Form.Field
                     required
                     name="type"
-                    onChange={(event) => console.log("change event")}
                     label="Script Type"
                     control={() => testTypeButtons(setFieldValue)}
-                  ></Form.Field>
-
-                  <Form.Input
-                    required
-                    label="Test Script (.ts file)"
-                    fluid
-                    type="file"
-                    name="script"
-                    onChange={(event) => {
-                      setFieldValue("script", event.currentTarget.files[0]);
-                    }}
-                    error={errors.script !== undefined}
                   />
+
+                  <Form.Field>
+                    <label>Upload a test file?</label>
+                    <Form.Checkbox
+                      name="uploadType"
+                      toggle
+                      onChange={(event, data) => {
+                        //switching from file upload back to script upload, clear previously selected file
+                        if (!data.checked)
+                          setFieldValue("testFile", null, false);
+
+                        setSelectedUploadType(
+                          data.checked
+                            ? TestUploadType.File
+                            : TestUploadType.Script
+                        );
+                      }}
+                    />
+                  </Form.Field>
+
+                  {selectedUploadType === TestUploadType.File ? (
+                    <Form.Input
+                      //required
+                      label={`Select your ${upperCaseFirstLetter(
+                        selectedTestType
+                      )} Script (.ts file) *`}
+                      fluid
+                      type="file"
+                      name="testFile"
+                      onChange={(event) => {
+                        setFieldValue("testFile", event.currentTarget.files[0]);
+                      }}
+                    />
+                  ) : (
+                    ""
+                  )}
+
+                  {selectedUploadType === TestUploadType.Script ? (
+                    <Form.Field>
+                      <label>{`Paste in your ${upperCaseFirstLetter(
+                        selectedTestType
+                      )} script *`}</label>
+                      <CodeMirror
+                        value={values.testScript}
+                        options={{
+                          mode: "javascript",
+                          theme: "material",
+                          lineNumbers: true,
+                        }}
+                        onChange={(editor, data, value) => {
+                          setFieldValue("testScript", value);
+                        }}
+                      />
+                    </Form.Field>
+                  ) : (
+                    ""
+                  )}
+
                   <Button
                     primary
                     type="submit"

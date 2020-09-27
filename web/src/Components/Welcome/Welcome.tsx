@@ -43,7 +43,7 @@ const Welcome = () => {
       validationSchema={yup.object().shape({
         name: yup
           .string()
-          .required("Name cannot be empty")
+          .required("Please enter a username")
           .max(20, "Maximum characters cannot exceed 50"),
         terms: yup
           .bool()
