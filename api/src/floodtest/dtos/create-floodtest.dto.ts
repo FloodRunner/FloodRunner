@@ -28,4 +28,8 @@ export class CreateFloodTestDto {
     message: "type should be either 'puppeteer' or 'element'",
   })
   readonly type: TestType;
+
+  @IsString()
+  @IsOptional()
+  readonly testScript: string;
 }

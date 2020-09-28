@@ -10,6 +10,7 @@ import {
   Delete,
   Patch,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
 import { FloodtestService } from './services/floodtest.service';
@@ -59,6 +60,9 @@ export class FloodtestController {
         interval: {
           type: 'string',
         },
+        type: {
+          type: 'string',
+        },
         testScript: {
           type: 'string',
           format: 'binary',
@@ -67,14 +71,14 @@ export class FloodtestController {
     },
   })
   @ApiOperation({
-    summary: 'Create a Flood Test for scheduled monitoring',
+    summary: 'Create a Browser Test for scheduled monitoring',
   })
   @ApiCreatedResponse({
-    description: 'Flood Element test was successfully created.',
+    description: 'Browser Test was successfully created.',
   })
   @Post()
   @UseInterceptors(
-    FileInterceptor('testScript', {
+    FileInterceptor('testFile', {
       dest: '/testScripts',
       preservePath: true,
       limits: {
@@ -96,6 +100,12 @@ export class FloodtestController {
     @Body(ValidationPipe) createFloodTestDto: CreateFloodTestDto,
     @UploadedFile() testFileDto: TestFileDto,
   ) {
+    if (!!!testFileDto && !!!createFloodTestDto.testScript) {
+      const errorMessage = `No test file or script supplied. Please supply a test file or script`;
+      this._logger.error(errorMessage);
+      throw new BadRequestException(errorMessage);
+    }
+
     await this.floodTestService.create(user, createFloodTestDto, testFileDto);
   }
   //#endregion
@@ -170,7 +180,7 @@ export class FloodtestController {
   })
   @Patch('/:id')
   @UseInterceptors(
-    FileInterceptor('testScript', {
+    FileInterceptor('testFile', {
       dest: '/testScripts',
       preservePath: true,
       limits: {

@@ -13,7 +13,8 @@ export interface CreateFloodTest {
   name: string;
   description: string;
   interval: number;
-  testScript: any;
+  testFile: any;
+  testScript: string;
   type: TestType;
 }
 
@@ -23,6 +24,7 @@ export function createFloodTestDto() {
     name: "",
     description: "",
     interval: 60,
+    testFile: null,
     testScript: null,
     type: TestType.Puppeteer,
   };

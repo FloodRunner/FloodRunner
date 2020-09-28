@@ -159,35 +159,29 @@ const FloodCreateForm = ({
           .string()
           .test(
             `testScript-required`,
-            `Please upload a test script`,
+            `Please insert your test script`,
             (value) => {
               return selectedUploadType != TestUploadType.Script
                 ? true
                 : value != null;
             }
-          ),
+          )
+          .nullable(),
       })}
       onSubmit={async (values, actions) => {
-        console.log(selectedUploadType); //this will be used to select the file or convert to a file
-        console.log(values.testScript);
-
-        //the user has input a script, convert to a file for upload
-        if (selectedUploadType == TestUploadType.Script) {
-        }
-
         var createTestDto: CreateFloodTest = {
           name: values.name,
           description: values.description,
           interval: values.interval,
-          testScript: values.testFile,
+          testFile: values.testFile,
+          testScript: values.testScript,
           type: values.type,
           userId: null,
         };
-        console.log(createTestDto);
-        // await createTest(createTestDto);
+        await createTest(createTestDto);
         actions.setSubmitting(false);
-        // closeModal();
-        // history.go(0); //reload page to show new test
+        closeModal();
+        history.go(0); //reload page to show new test
       }}
       render={({
         errors,
@@ -257,9 +251,9 @@ const FloodCreateForm = ({
                       name="uploadType"
                       toggle
                       onChange={(event, data) => {
-                        //switching from file upload back to script upload, clear previously selected file
-                        if (!data.checked)
-                          setFieldValue("testFile", null, false);
+                        //switching between file upload back and script upload
+                        setFieldValue("testFile", null, false);
+                        setFieldValue("testScript", null, false);
 
                         setSelectedUploadType(
                           data.checked
