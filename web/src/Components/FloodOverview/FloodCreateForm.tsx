@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Icon, Message, Image } from "semantic-ui-react";
-import { Formik, ErrorMessage } from "formik";
+import { Formik } from "formik";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import * as yup from "yup";
 import _ from "lodash";
@@ -15,7 +15,6 @@ import history from "../../Utils/history";
 import elementLogo from "../../images/script_types/flood_element.png";
 import puppeteerLogo from "../../images/script_types/puppeteer.png";
 import "./floodtest-overview-style.css";
-import TestScriptModal from "../FloodTestDetails/TestScriptModal";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";

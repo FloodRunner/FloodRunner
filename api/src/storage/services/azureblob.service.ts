@@ -10,7 +10,6 @@ import {
   generateBlobSASQueryParameters,
   ContainerSASPermissions,
 } from '@azure/storage-blob';
-import { testForBuffer } from 'class-transformer/TransformOperationExecutor';
 // Use StorageSharedKeyCredential with storage account and account key
 // StorageSharedKeyCredential is only avaiable in Node.js runtime, not in browsers
 const sharedKeyCredential = new StorageSharedKeyCredential(
@@ -124,7 +123,6 @@ export class AzureBlobService implements IFileService {
     const blobName = this.createTestScriptPath(id);
     this._logger.log(`Uploading test script with name: ${blobName}`);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    // const tempFile = fs.readFileSync(testFileDto.path);
     const uploadBlobResponse = await blockBlobClient.upload(test, test.length);
     this._logger.log(`Uploaded block blob ${blobName} successfully`);
 
