@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FloodTest } from '../repositories/schemas/flood-test.schema';
@@ -16,7 +16,7 @@ import * as mongoose from 'mongoose';
 @Injectable()
 export class FloodtestService {
   private _logger = new Logger('FloodTestService');
-  private _maximumTestsAllowed = 1;
+  private _maximumTestsAllowed = 20;
 
   constructor(
     @InjectModel('FloodTest') private floodTestModel: Model<FloodTest>,
@@ -59,12 +59,25 @@ export class FloodtestService {
       .length;
     if (existingFloodTests == this._maximumTestsAllowed) {
       this._logger.error('User test quota reached, cannot create new test.');
-      throw new Error('User test quota reached, cannot create new test.');
+      throw new BadRequestException(
+        'User test quota reached, cannot create new test.',
+      );
     }
 
     const testId = new mongoose.Types.ObjectId().toHexString();
     this._logger.log(`Test id generated: ${testId}`);
-    const testUri = await this.fileService.uploadFile(testId, testFileDto);
+
+    //convert supplied script to a file
+    let testUri = null;
+    if (!!createFloodTestDto.testScript) {
+      testUri = await this.fileService.uploadFile(
+        testId,
+        createFloodTestDto.testScript,
+      );
+    } else {
+      testUri = await this.fileService.uploadFile(testId, testFileDto);
+    }
+
     const createdFloodTest = await this.floodTestRepository.create(
       testId,
       user,

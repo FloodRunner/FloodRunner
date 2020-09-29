@@ -3,12 +3,18 @@ export enum TestType {
   Element = "element",
 }
 
+export enum TestUploadType {
+  File = "file",
+  Script = "script",
+}
+
 export interface CreateFloodTest {
   userId: string;
   name: string;
   description: string;
   interval: number;
-  testScript: any;
+  testFile: any;
+  testScript: string;
   type: TestType;
 }
 
@@ -18,6 +24,7 @@ export function createFloodTestDto() {
     name: "",
     description: "",
     interval: 60,
+    testFile: null,
     testScript: null,
     type: TestType.Puppeteer,
   };

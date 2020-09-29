@@ -19,7 +19,7 @@ function FloodOverview() {
   const [showCreateTestModal, setshowCreateTestModal] = useState<boolean>(
     false
   );
-  const _maximumFloodTests = 1;
+  const _maximumFloodTests = 20;
 
   useEffect(() => {
     async function test() {
