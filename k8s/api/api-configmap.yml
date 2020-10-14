@@ -4,6 +4,9 @@ metadata:
   name: api-config
 #  namespace: api
 data:
+  #mongodb hosting environment (allowed values: 'localhost', 'atlas', 'kubernetes')
+  MONGODB_HOSTTYPE: "atlas"
+  #mongodb port
   MONGODB_PORT: "27017"
   #name of job database (eg. Agenda database)
   MONGODB_JOB_DATABASE: "flood"

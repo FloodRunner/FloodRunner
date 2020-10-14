@@ -10,7 +10,6 @@ const vm = new NodeVM({
   require: {
     external: ["puppeteer", "lodash"],
     builtin: ["fs", "path"],
-    // root: "./",
     mock: {
       fs: {
         readFileSync() {
