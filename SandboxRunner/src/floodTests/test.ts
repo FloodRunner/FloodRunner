@@ -13,6 +13,7 @@ export const settings: TestSettings = {
   extraHTTPHeaders: {
     "Accept-Language": "en",
   },
+  loopCount: 1,
 };
 
 /**

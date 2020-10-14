@@ -1,8 +1,13 @@
 import * as config from 'config';
 
 export class Keys {
+  static mongoDbHostType =
+    process.env.MONGODB_HOSTTYPE || config.get('mongodb.hostType');
   static mongoDbHost = process.env.MONGODB_HOST || config.get('mongodb.host');
   static mongoDbPort = process.env.MONGODB_PORT || config.get('mongodb.port');
+  static mongoDbConnectionString =
+    process.env.MONGODB_CONNECTIONSTRING ||
+    config.get('mongodb.connectionString');
   static mongoDbJobDatabaseName =
     process.env.MONGODB_JOB_DATABASE || config.get('mongodb.jobDatabaseName');
   static mongoDbJobCollectionName =
@@ -34,9 +39,11 @@ export class Keys {
   static buildMongoDbConnectionString(database: string): string {
     //this assumes localhost has no authentication
     let connectionString: string;
-    if (this.mongoDbHost === 'localhost') {
+    if (this.mongoDbHostType === 'localhost') {
       connectionString = `mongodb://${this.mongoDbHost}:${this.mongoDbPort}/${database}`;
-    } else {
+    } else if (this.mongoDbHostType === 'atlas') {
+      connectionString = this.mongoDbConnectionString;
+    } else if (this.mongoDbHostType === 'kubernetes') {
       connectionString = `mongodb://${this.mongoDbUsername}:${this.mongoDbPassword}@${this.mongoDbHost}:${this.mongoDbPort}/${database}?authSource=admin`;
     }
     return connectionString;

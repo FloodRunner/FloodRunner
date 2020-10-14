@@ -16,7 +16,7 @@ spec:
             path: '/var/run/docker.sock'
       containers:
         - name: floodrunner-sandboxrunner
-          image: jellydock/floodrunner-sandboxrunner:v3
+          image: jellydock/floodrunner-sandboxrunner:v3.1.0
           securityContext:
             capabilities:
               add:

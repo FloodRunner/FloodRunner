@@ -105,7 +105,8 @@ RabbitMq is used as the messaging service for scheduling test executions and als
 Ensure Helm is installed on your machine, [install instructions](https://helm.sh/docs/intro/install/). Then complete the following steps:
 
 - Create a namespace for RabbitMq to be deployed into using `kubectl create namespace rabbit`
-- Install RabbitMq using `helm install rabbit stable/rabbitmq --namespace rabbit`
+- Add the helm repo using `helm repo add bitnami https://charts.bitnami.com/bitnami`
+- Install RabbitMq using `helm install rabbit bitnami/rabbitmq --namespace rabbit`
 - Once installed, username will be `user` and password can be obtained using `(kubectl get secret --namespace rabbit rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)`. These credentials can then be used in the `api-secrets.yml` file to specify secrets for the API deployment.
 - Run `skaffold run -p rabbitmq` to create the Traefik routes for RabbitMq. This will create a Traefik rule to allow you to access the RabbitMQ management interface on `http://<traefikExternalIp>:15672/rabbitmq/management/#/`. It will also also expose the RabbitMq instance and then the amqp connection string will be `amqp://<rabbitmq-user-name>:<rabbitmq-password>@<traefikExternalIp>` allowing you to access it from outside the cluster if desired.
 
