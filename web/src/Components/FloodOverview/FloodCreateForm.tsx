@@ -11,6 +11,7 @@ import {
   TestType,
   TestUploadType,
 } from "../../Models/Api/FloodTest";
+import {ScriptPlaceholders} from "./Placeholders";
 import history from "../../Utils/history";
 import elementLogo from "../../images/script_types/flood_element.png";
 import puppeteerLogo from "../../images/script_types/puppeteer.png";
@@ -19,6 +20,7 @@ import "./floodtest-overview-style.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 require("codemirror/mode/javascript/javascript");
+require('codemirror/addon/display/placeholder')
 
 interface IProps {
   createFloodTest: CreateFloodTest;
@@ -42,6 +44,7 @@ const FloodCreateForm = ({
   const [selectedUploadType, setSelectedUploadType] = useState<string>(
     TestUploadType.Script
   );
+  const [scriptPlaceholder, setScriptPlaceholder] = useState<string>(ScriptPlaceholders.puppeteerPlaceholder);
 
   const renderBetaWarning = () => {
     return (
@@ -70,6 +73,7 @@ const FloodCreateForm = ({
           onClick={(e) => {
             e.preventDefault();
             setSelectedTestType(TestType.Puppeteer);
+            setScriptPlaceholder(ScriptPlaceholders.puppeteerPlaceholder);
             setFieldValue(field, TestType.Puppeteer);
           }}
         >
@@ -86,6 +90,7 @@ const FloodCreateForm = ({
           onClick={(e) => {
             e.preventDefault();
             setSelectedTestType(TestType.Element);
+            setScriptPlaceholder(ScriptPlaceholders.elementPlaceholder);
             setFieldValue(field, TestType.Element);
           }}
         >
@@ -291,6 +296,7 @@ const FloodCreateForm = ({
                           mode: "javascript",
                           theme: "material",
                           lineNumbers: true,
+                          placeholder: scriptPlaceholder
                         }}
                         onChange={(editor, data, value) => {
                           setFieldValue("testScript", value);
