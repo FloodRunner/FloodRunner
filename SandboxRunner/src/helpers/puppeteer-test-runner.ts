@@ -52,25 +52,27 @@ const runPuppeteerTest = (testScript: string) =>
 
       var wrappedPuppeteerCode = `
       module.exports = async function (callback) {
+          
           (async () => {
             try{
-              console.log("running script")
+              const puppeteer = require('puppeteer')
+              
               ${puppeteerScript}
   
-              \n callback()
+              \n callback(true)
             }catch(err){
-              console.log("thrown script")
               console.log(err)
-              callback()
+              callback(false)
             }
           })()
       }
     `;
 
       let puppeteerSandbox = vm.run(wrappedPuppeteerCode, "vm.js");
-      puppeteerSandbox(() => {
+      puppeteerSandbox((passed: boolean) => {
         applicationLogger.info("----Puppeteer script completed---");
-        resolve();
+        if (passed) resolve();
+        else reject();
       });
     } catch (err) {
       systemLogger.error("--- Test run failed ---");

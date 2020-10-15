@@ -89,7 +89,8 @@ async function runTests(floodTests: string[], testType: TestType) {
 
 function parseHrtimeToSeconds(hrtime): number {
   var seconds = hrtime[0] + hrtime[1] / 1e9;
-  return Math.round(seconds);
+  //ensure that minimum seconds is 1
+  return Math.max(Math.round(seconds), 1);
 }
 
 export default {
