@@ -9,7 +9,7 @@ resources:
 - repo: self
 
 variables:
-  vmImageName: 'windows-2019'
+  vmImageName: 'ubuntu-latest'
   sandboxRunnerTag: "v3.2.0"
   webTag: "latest"
   apiTag: "latest"
