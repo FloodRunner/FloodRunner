@@ -23,10 +23,10 @@ stages:
     - task: Docker@2
       displayName: Build an image
       inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/SandboxRunner/Dockerfile'
-        tags: |
-          $(sandboxRunnerTag)
+        repository: 'jellydock/floodrunner-sandboxrunner'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(sandboxRunnerTag)'
 
     - task: Docker@2
       inputs:
