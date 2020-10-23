@@ -10,9 +10,12 @@ resources:
 
 variables:
   sandboxRunnerTag: "v3.2.0"
+  webTag: "latest"
+  apiTag: "latest"
+  
 
 stages:
-- stage: BuildSandboxRunner
+- stage: SandboxRunner
   displayName: Build and Push SandboxRunner
   jobs:  
   - job: Build
@@ -21,17 +24,46 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
-      displayName: Build an image
+      displayName: Build SandboxRunner
       inputs:
         repository: 'jellydock/floodrunner-sandboxrunner'
         command: 'build'
-        Dockerfile: '**/Dockerfile'
+        Dockerfile: '$(System.DefaultWorkingDirectory)/SandboxRunner/Dockerfile'
         tags: '$(sandboxRunnerTag)'
 
     - task: Docker@2
+      displayName: Push SandboxRunner
       inputs:
         containerRegistry: 'JellyDocker DockerHub'
         repository: 'jellydock/floodrunner-sandboxrunner'
         command: 'push'
         tags: '$(sandboxRunnerTag)'
+
+- stage: Web
+  dependsOn: []
+  displayName: Build and Push Web
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      displayName: Build Web
+      inputs:
+        repository: 'jellydock/floodrunner-web'
+        command: 'build'
+        Dockerfile: '$(System.DefaultWorkingDirectory)/web/Dockerfile'
+        tags: '$(webTag)'
+
+    - task: Docker@2
+      displayName: Push Web
+      inputs:
+        containerRegistry: 'JellyDocker DockerHub'
+        repository: 'jellydock/floodrunner-web'
+        command: 'push'
+        tags: '$(webTag)'
+
+
+
     
