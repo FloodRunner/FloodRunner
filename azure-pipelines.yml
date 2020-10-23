@@ -64,6 +64,31 @@ stages:
         repository: 'jellydock/floodrunner-web'
         command: 'push'
         tags: '$(webTag)'
+        
+- stage: Api
+  dependsOn: []
+  displayName: Build and Push Api
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build Api
+      inputs:
+        repository: 'jellydock/floodrunner-api'
+        command: 'build'
+        Dockerfile: '$(System.DefaultWorkingDirectory)/api/Dockerfile'
+        tags: '$(apiTag)'
+
+    - task: Docker@2
+      displayName: Push Api
+      inputs:
+        containerRegistry: 'JellyDocker DockerHub'
+        repository: 'jellydock/floodrunner-api'
+        command: 'push'
+        tags: '$(apiTag)'
 
 
 
