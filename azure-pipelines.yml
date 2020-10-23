@@ -9,6 +9,7 @@ resources:
 - repo: self
 
 variables:
+  vmImageName: 'windows-2019'
   sandboxRunnerTag: "v3.2.0"
   webTag: "latest"
   apiTag: "latest"
@@ -21,7 +22,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build SandboxRunner
@@ -46,7 +47,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build Web
