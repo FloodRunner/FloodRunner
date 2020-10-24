@@ -65,7 +65,7 @@ const Welcome = () => {
           content={
             <>
               <p>
-                Thank you for signing up to the <strong>Beta</strong>:{" "}
+                Welcome to FloodRunner.
               </p>
               {errors.name && <Message error content={errors.name} />}
 
