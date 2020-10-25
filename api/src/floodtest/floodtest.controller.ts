@@ -12,7 +12,7 @@ import {
   UseGuards,
   BadRequestException,
 } from '@nestjs/common';
-import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FloodtestService } from './services/floodtest.service';
 import { CreateFloodTestDto } from './dtos/create-floodtest.dto';
 import { FloodTest } from './repositories/schemas/flood-test.schema';
