@@ -9,7 +9,7 @@ import { UserRepository } from '../repositories/user.repository';
 import { User } from '../repositories/schemas/user.schema';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(BaseStrategy) {
+export class JwtStrategy extends PassportStrategy(BaseStrategy, 'jwt') {
   private _logger = new Logger('JwtStrategy');
 
   constructor(private userRepository: UserRepository) {
@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(BaseStrategy) {
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
-        jwksRequestsPerMinute: 6,
+        jwksRequestsPerMinute: 20, //1 request every 3 seconds
         jwksUri: `https://${Keys.auth_domain}/.well-known/jwks.json`,
       }),
 

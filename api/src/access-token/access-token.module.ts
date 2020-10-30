@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from 'src/auth/auth.module';
 import { ApiAccessTokenController } from './access-token.controller';
+import { ApiAccessTokenAuthGuard } from './guards/api-access-token-auth.guard';
 import { ApiAccessTokenRepository } from './repositories/api-access-token.repository';
 import {
   ApiAccessToken,
@@ -16,7 +17,12 @@ import { AccessTokenService } from './services/access-token.service';
     ]),
     AuthModule,
   ],
-  providers: [AccessTokenService, ApiAccessTokenRepository],
+  providers: [
+    AccessTokenService,
+    ApiAccessTokenRepository,
+    ApiAccessTokenAuthGuard,
+  ],
   controllers: [ApiAccessTokenController],
+  exports: [ApiAccessTokenAuthGuard, AccessTokenService],
 })
 export class AccessTokenModule {}

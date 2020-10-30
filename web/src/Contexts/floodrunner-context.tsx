@@ -56,7 +56,7 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     if (this.context.isAuthenticated)
       authToken = await this.context.getTokenSilently();
 
-    // console.log({ authToken });
+    console.log({ authToken });
     return axios.create({
       baseURL: Config.floodrunner_api_url,
       headers: {

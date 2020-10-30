@@ -100,12 +100,22 @@ export class ApiAccessTokenRepository {
     return (accessTokens as any) as AccessTokenDto[];
   }
 
-  //   async findById(user: User, id: string): Promise<FloodTest> {
-  //     return this.floodTestModel.findOne({
-  //       userId: user._id,
-  //       _id: id,
-  //     });
-  //   }
+  /**
+   * Find the access token in the database
+   * @param accessToken the access token stored in the database
+   */
+  async find(accessToken: string): Promise<ApiAccessToken> {
+    this._logger.debug(
+      `Searching for access token: ${accessToken.substring(0, 3)}...`,
+    );
+    var accessTokenModel = await this.apiAccessTokenModel
+      .findOne({
+        value: accessToken,
+      })
+      .exec();
+
+    return accessTokenModel;
+  }
 
   /**
    * Deletes access token

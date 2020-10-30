@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import * as moment from 'moment';
 import { User } from 'src/auth/repositories/schemas/user.schema';
+import { UserRepository } from 'src/auth/repositories/user.repository';
 import { AccessTokenDto } from '../dtos/access-token.dto';
 import { CreateApiAccessTokenDto } from '../dtos/create-accesstoken.dto';
 import { ApiAccessTokenRepository } from '../repositories/api-access-token.repository';
@@ -8,7 +10,10 @@ import { ApiAccessTokenRepository } from '../repositories/api-access-token.repos
 export class AccessTokenService {
   private _logger = new Logger('AccessTokenService');
 
-  constructor(private accessTokenRepository: ApiAccessTokenRepository) {}
+  constructor(
+    private accessTokenRepository: ApiAccessTokenRepository,
+    private userRepository: UserRepository,
+  ) {}
 
   /**
    * Creates an API Access Token for the user
@@ -41,5 +46,29 @@ export class AccessTokenService {
    */
   async findAll(user?: User): Promise<AccessTokenDto[]> {
     return this.accessTokenRepository.findAll(user);
+  }
+
+  /**
+   * Validates if the access token exists and is still valid
+   * @param accessTokenModel access token model
+   */
+  async validate(accessToken: string): Promise<boolean> {
+    var accessTokenModel = await this.accessTokenRepository.find(accessToken);
+
+    //validate expiry using moment
+    if (moment(accessTokenModel.expiresAt).isBefore(moment.now())) {
+      this._logger.debug('Access token is expired...');
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Find the user from the access token
+   * @param accessToken access token
+   */
+  async getUserFromToken(accessToken: string): Promise<User> {
+    var accessTokenModel = await this.accessTokenRepository.find(accessToken);
+    return await this.userRepository.findById(accessTokenModel.userId);
   }
 }

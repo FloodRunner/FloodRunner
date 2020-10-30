@@ -22,16 +22,16 @@ import {
   ApiConsumes,
   ApiParam,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from '../auth/repositories/schemas/user.schema';
 import { AccessTokenService } from './services/access-token.service';
 import { CreateApiAccessTokenDto } from './dtos/create-accesstoken.dto';
 import { AccessTokenDto } from './dtos/access-token.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('apiaccesstoken')
 @Controller('apiaccesstoken')
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 export class ApiAccessTokenController {
   private _logger = new Logger('ApiAccessTokenController');
 
@@ -72,9 +72,13 @@ export class ApiAccessTokenController {
   async create(
     @GetUser() user: User,
     @Body(ValidationPipe) createApiAccessTokenDto: CreateApiAccessTokenDto,
-  ) {
-    await this.apiAccessTokenService.create(user, createApiAccessTokenDto);
+  ): Promise<string> {
+    var accessToken = await this.apiAccessTokenService.create(
+      user,
+      createApiAccessTokenDto,
+    );
     this._logger.log(`Created api access token for user, userId: ${user._id}`);
+    return accessToken;
   }
   //#endregion
 
