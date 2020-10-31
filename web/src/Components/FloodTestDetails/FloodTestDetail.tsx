@@ -27,7 +27,6 @@ function FloodTestDetail(props) {
     getTestById,
     getTestResultSummariesById,
     downloadTestScript,
-    downloadTestFile,
     deleteTestById,
   } = useFloodRunner();
   const [floodTestResultSummaries, setfloodTestResultSummaries] = useState<
