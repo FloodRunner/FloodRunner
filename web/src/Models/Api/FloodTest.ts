@@ -57,3 +57,23 @@ export interface FloodTestResultSummary {
   screenShotUris: string[];
   runOn: Date;
 }
+
+export interface AccessToken {
+  readonly _id: string;
+
+  readonly name: string;
+
+  readonly description: string;
+
+  readonly createdAt: Date;
+
+  readonly expiresAt: Date;
+}
+
+export interface CreateAccessToken {
+  readonly name: string;
+
+  readonly description: string;
+
+  readonly expiresAt: string;
+}

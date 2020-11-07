@@ -5,6 +5,8 @@ import {
   FloodTest,
   FloodTestResultSummary,
   CreateFloodTest,
+  AccessToken,
+  CreateAccessToken,
 } from "../Models/Api/FloodTest";
 import { Config } from "../Config/config";
 
@@ -21,6 +23,9 @@ interface ContextValueType {
   downloadTestFile?: (testName: string, testUri: string) => void;
   deleteTestById?: (testId: string) => Promise<void>;
   createTest?: (createTestDto: CreateFloodTest) => Promise<void>;
+  createToken?: (createTokenDto: CreateAccessToken) => Promise<void>;
+  getAllTokens?: () => Promise<AccessToken[]>;
+  deleteTokenById?: (tokenId: string) => Promise<void>;
 }
 
 //create the context
@@ -192,6 +197,45 @@ export class FloodRunnerProvider extends Component<{}, IState> {
     }
   };
 
+  createToken = async (createTokenDto: CreateAccessToken): Promise<string> => {
+    try {
+      const floodRunnerClient = await this.createFloodRunnerClient();
+      const response = await floodRunnerClient.post<string>(`/apiaccesstoken`, {
+        name: createTokenDto.name,
+        description: createTokenDto.description,
+        expiresAt: createTokenDto.expiresAt,
+      });
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  getAllTokens = async (): Promise<AccessToken[]> => {
+    try {
+      const floodRunnerClient = await this.createFloodRunnerClient();
+      const response = await floodRunnerClient.get<AccessToken[]>(
+        "/apiaccesstoken"
+      );
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  deleteTokenById = async (tokenId: string): Promise<void> => {
+    try {
+      const floodRunnerClient = await this.createFloodRunnerClient();
+      const response = await floodRunnerClient.delete<string>(
+        `/apiaccesstoken/${tokenId}`
+      );
+      const isDeleted = response.status;
+      return;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   render() {
     const { tests, appLogs, screenshotUris } = this.state;
     const { children } = this.props;
@@ -213,6 +257,10 @@ export class FloodRunnerProvider extends Component<{}, IState> {
       deleteTestById: (testId: string) => this.deleteTestById(testId),
       createTest: (createTestDto: CreateFloodTest) =>
         this.createTest(createTestDto),
+      createToken: (createTokenDto: CreateAccessToken) =>
+        this.createToken(createTokenDto),
+      getAllTokens: () => this.getAllTokens(),
+      deleteTokenById: (tokenId: string) => this.deleteTokenById(tokenId),
     };
 
     return (

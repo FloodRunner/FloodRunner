@@ -20,6 +20,7 @@ import { SchedulingModule } from '../scheduling/scheduling.module';
 import { FloodTest } from './repositories/schemas/flood-test.schema';
 import { FloodTestRepository } from './repositories/floodtest.repository';
 import { FloodTestResultSummaryRepository } from './repositories/floodtest-result-summary.repository';
+import { AccessTokenModule } from '../access-token/access-token.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { FloodTestResultSummaryRepository } from './repositories/floodtest-resul
     StorageModule,
     MessagingModule,
     SchedulingModule,
+    AccessTokenModule,
   ],
   providers: [
     FloodtestService,

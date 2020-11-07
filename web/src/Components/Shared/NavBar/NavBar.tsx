@@ -7,6 +7,8 @@ import {
   Image,
   Dropdown,
   Header,
+  DropdownItemProps,
+  Icon,
 } from "semantic-ui-react";
 import { useAuth0 } from "../../../Contexts/auth0-context";
 import "./navbar-styles.css";
@@ -37,7 +39,6 @@ function NavBar() {
   useEffect(() => {
     if (!isLoading) {
       const { name, picture, email } = user;
-      console.log(user);
       setUserInfo({
         name,
         picture,
@@ -50,6 +51,11 @@ function NavBar() {
     e: React.MouseEvent<HTMLAnchorElement | MouseEvent>,
     data: MenuItemProps
   ) => setActiveItem(data.name as string);
+
+  const handleSettingsItemClick = (
+    e: React.MouseEvent<HTMLDivElement | MouseEvent>,
+    data: DropdownItemProps
+  ) => setActiveItem(data.text as string);
 
   const currentRoute = useLocation().pathname;
   const isLegalRoute = currentRoute.includes("legal");
@@ -77,9 +83,24 @@ function NavBar() {
         <Dropdown text="Settings">
           <Dropdown.Menu>
             <Dropdown.Header content={renderProfileLabel()} />
-            {/* <Dropdown.Item>Announcement</Dropdown.Item>
-            <Dropdown.Item>Discussion</Dropdown.Item> */}
-            {/* <Dropdown.Divider /> */}
+            <Dropdown.Item
+              name="profile"
+              as={Link}
+              to="/settings/profile"
+              onClick={handleSettingsItemClick}
+            >
+              <Icon name="user" /> Profile
+            </Dropdown.Item>
+            <Dropdown.Item
+              name="tokens"
+              as={Link}
+              to="/settings/tokens"
+              onClick={handleSettingsItemClick}
+            >
+              <Icon name="key" />
+              Personal access tokens
+            </Dropdown.Item>
+            <Dropdown.Divider />
             <Dropdown.Item>{renderLogoutButton()}</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

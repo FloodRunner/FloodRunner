@@ -1,5 +1,5 @@
-import React, { useEffect, useState, FunctionComponent } from "react";
-import { Button, Icon, Card, Item, Container, Label } from "semantic-ui-react";
+import React from "react";
+import { Button, Icon, Card, Item, Label } from "semantic-ui-react";
 import moment from "moment";
 import { FloodTest, TestType } from "../../Models/Api/FloodTest";
 import { Link } from "react-router-dom";

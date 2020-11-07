@@ -12,7 +12,7 @@ import {
   UseGuards,
   BadRequestException,
 } from '@nestjs/common';
-import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FloodtestService } from './services/floodtest.service';
 import { CreateFloodTestDto } from './dtos/create-floodtest.dto';
 import { FloodTest } from './repositories/schemas/flood-test.schema';
@@ -36,10 +36,12 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from '../auth/repositories/schemas/user.schema';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiAccessTokenAuthGuard } from 'src/access-token/guards/api-access-token-auth.guard';
 
 @ApiTags('floodrunner')
 @Controller('floodtest')
-@UseGuards(AuthGuard())
+@UseGuards(ApiAccessTokenAuthGuard, JwtAuthGuard)
 export class FloodtestController {
   private _logger = new Logger('FloodTestController');
 

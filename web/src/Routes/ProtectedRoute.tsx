@@ -5,6 +5,7 @@ import { useAuth0 } from "../Contexts/auth0-context";
 interface IProtectedRouteOptions {
   component: React.FC;
   path: string;
+  exact?: boolean;
 }
 
 type ProtectedRouteOptions = IProtectedRouteOptions;
@@ -12,6 +13,7 @@ type ProtectedRouteOptions = IProtectedRouteOptions;
 const ProtectedRoute = ({
   component,
   path,
+  exact,
   ...rest
 }: ProtectedRouteOptions) => {
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
@@ -33,7 +35,15 @@ const ProtectedRoute = ({
 
   const render = (props: RouteComponentProps<{}>) => <Component {...props} />;
 
-  return <Route path={path} render={render} component={component} {...rest} />;
+  return (
+    <Route
+      path={path}
+      render={render}
+      exact={exact}
+      component={component}
+      {...rest}
+    />
+  );
 };
 
 export default ProtectedRoute;

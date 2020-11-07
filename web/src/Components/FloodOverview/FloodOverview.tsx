@@ -4,7 +4,7 @@ import { useFloodRunner } from "../../Contexts/floodrunner-context";
 import { FloodTest, createFloodTestDto } from "../../Models/Api/FloodTest";
 import FloodTestCard from "./FloodTestCard";
 import "./floodtest-overview-style.css";
-import { Button, Icon, Segment, Message } from "semantic-ui-react";
+import { Button, Icon } from "semantic-ui-react";
 import LoadingPlaceholder from "../Shared/Loader/LoadingPlaceholder";
 import FloodCreateForm from "./FloodCreateForm";
 
@@ -13,7 +13,7 @@ interface FloodOverviewState {
 }
 
 function FloodOverview() {
-  const { isLoading, getIdTokenClaims, getTokenSilently } = useAuth0();
+  const { isLoading } = useAuth0();
   const { getAllTests } = useFloodRunner();
   const [floodTests, setFloodTests] = useState<FloodTest[]>([]);
   const [showCreateTestModal, setshowCreateTestModal] = useState<boolean>(

@@ -3,8 +3,8 @@ import "./App.css";
 import { Switch, Route } from "react-router-dom";
 import NavBar from "./Components/Shared/NavBar/NavBar";
 import { Container } from "semantic-ui-react";
-import Home from "./Components/Home/Home";
 import FloodOverview from "./Components/FloodOverview/FloodOverview";
+import Settings from "./Components/Settings/Settings";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import FloodTestDetail from "./Components/FloodTestDetails/FloodTestDetail";
 import TermsOfService from "./Components/Legal/TermsOfService";
@@ -33,9 +33,12 @@ function App(): JSX.Element {
             />
             <Route path={"/welcome"} exact={true} component={Welcome} />
             <ProtectedRoute path="/tests/:testId" component={FloodTestDetail} />
-            <ProtectedRoute path={"/"} component={FloodOverview} />
+            <ProtectedRoute path={"/"} exact={true} component={FloodOverview} />
           </Switch>
         </Container>
+        <Switch>
+          <ProtectedRoute path={"/settings/:section"} component={Settings} />
+        </Switch>
       </div>
       <Footer />
     </div>
