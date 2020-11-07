@@ -103,7 +103,7 @@ function Tokens() {
           can be passed in the `x-api-key` header to access REST APIs
         </p>
       </div>
-      {_.isEmpty(accessTokens) ? (
+      {isLoading ? (
         <LoadingPlaceholder />
       ) : (
         <>
