@@ -58,7 +58,7 @@ const httpTrigger: AzureFunction = async function (
   const tests = [
     `${
       !isDevelopment
-        ? `./src/testScripts/${testScriptPath}`
+        ? `./build/src/testScripts/${testScriptPath}`
         : `./build/src/testScripts/${testScriptPath}`
     }`,
   ];
