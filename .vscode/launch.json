@@ -8,25 +8,40 @@
       "type": "node",
       "request": "launch",
       "name": "SandboxRunner Debug",
-      "skipFiles": ["<node_internals>\\**"],
-      "program": "${workspaceFolder}\\SandboxRunner\\build\\index.js",
+      "skipFiles": [
+        "<node_internals>\\**"
+      ],
+      "program": "${workspaceFolder}\\SandboxRunner\\build\\Puppeteer\\index.js",
       "env": {
         "NODE_ENV": "DEV"
       },
       "cwd": "${workspaceFolder}\\SandboxRunner",
-      "outFiles": ["${workspaceFolder}\\SandboxRunner\\build\\**\\*.js"]
+      "outFiles": [
+        "${workspaceFolder}\\SandboxRunner\\build\\**\\*.js"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "API Debug",
-      "skipFiles": ["<node_internals>\\**"],
+      "skipFiles": [
+        "<node_internals>\\**"
+      ],
       "program": "${workspaceFolder}\\api\\dist\\main.js",
       "env": {
         "NODE_ENV": "develop"
       },
       "cwd": "${workspaceFolder}\\api",
-      "outFiles": ["${workspaceFolder}\\api\\dist\\**\\*.js"]
+      "outFiles": [
+        "${workspaceFolder}\\api\\dist\\**\\*.js"
+      ]
+    },
+    {
+      "name": "Attach to Node Functions",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "preLaunchTask": "func: host start"
     }
   ]
 }

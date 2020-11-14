@@ -1,4 +1,3 @@
-import { applicationLogger, systemLogger } from "./logger";
 import { Keys } from "../constants/keys";
 import { NodeVM } from "vm2";
 import fs from "fs";
@@ -20,21 +19,25 @@ const vm = new NodeVM({
   },
 });
 
-//bind to the console events inside the vm
-vm.on("console.log", (data) => {
-  applicationLogger.info(data);
-});
+const runPuppeteerTest = (
+  testScript: string,
+  systemLogger: any,
+  applicationLogger: any
+) => {
+  //bind to the console events inside the vm
+  vm.on("console.log", (data) => {
+    applicationLogger.info(data);
+  });
 
-vm.on("console.info", (data) => {
-  applicationLogger.info(data);
-});
+  vm.on("console.info", (data) => {
+    applicationLogger.info(data);
+  });
 
-vm.on("console.error", (data) => {
-  applicationLogger.info(data);
-});
+  vm.on("console.error", (data) => {
+    applicationLogger.info(data);
+  });
 
-const runPuppeteerTest = (testScript: string) =>
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       var puppeteerScript = fs.readFileSync(`${testScript}`, {
         encoding: "utf-8",
@@ -81,6 +84,7 @@ const runPuppeteerTest = (testScript: string) =>
     } finally {
     }
   });
+};
 
 export default {
   runPuppeteerTest: runPuppeteerTest,

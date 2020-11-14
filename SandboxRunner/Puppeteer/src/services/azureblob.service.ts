@@ -8,26 +8,37 @@ import {
   BlobDownloadResponseModel,
   ContainerClient,
 } from "@azure/storage-blob";
-import { systemLogger } from "../helpers/logger";
 import * as path from "path";
-
-// Use StorageSharedKeyCredential with storage account and account key
-// StorageSharedKeyCredential is only avaiable in Node.js runtime, not in browsers
-const sharedKeyCredential = new StorageSharedKeyCredential(
-  Keys.azure_storageAccountName,
-  Keys.azure_storageAccountAccessKey
-);
-const blobServiceClient = new BlobServiceClient(
-  `https://${Keys.azure_storageAccountName}.blob.core.windows.net`,
-  sharedKeyCredential
-);
 
 export class AzureblobService implements IFileService {
   private _testDirectory = path.join(__dirname, `../testScripts`);
   private _logDirectory = path.join(__dirname, `../../logs`);
-  private _testResultDirectory = path.join(__dirname, `../../testResult`);
+  private _testResultDirectory = path.join(
+    __dirname,
+    `../../../${Keys.testResultFolderName}`
+  );
   private _screenshotDirectoryName = Keys.testScreenshotFolderName; //this is a element script convention
-  private _maximumScreenshotsAllowed = Keys.maximumAllowedScreenshots;
+
+  // Use StorageSharedKeyCredential with storage account and account key
+  // StorageSharedKeyCredential is only avaiable in Node.js runtime, not in browsers
+  private _sharedKeyCredential: StorageSharedKeyCredential;
+  private _blobServiceClient: BlobServiceClient;
+
+  constructor(
+    azureStorageAccountName: string,
+    azureStorageAccountAccessKey: string,
+    private systemLogger
+  ) {
+    this._sharedKeyCredential = new StorageSharedKeyCredential(
+      azureStorageAccountName,
+      azureStorageAccountAccessKey
+    );
+
+    this._blobServiceClient = new BlobServiceClient(
+      `https://${azureStorageAccountName}.blob.core.windows.net`,
+      this._sharedKeyCredential
+    );
+  }
 
   public createTestScriptPath(id: string): string {
     return `testscript_${id}.ts`;
@@ -55,7 +66,9 @@ export class AzureblobService implements IFileService {
 
   async downloadFile(id: string): Promise<string> {
     const containerName = this.createContainerName(id);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const containerClient = this._blobServiceClient.getContainerClient(
+      containerName
+    );
 
     const blobName = this.createTestScriptPath(id);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -64,8 +77,11 @@ export class AzureblobService implements IFileService {
       var downloadBlockBlobResponse: BlobDownloadResponseModel = await blockBlobClient.download(
         0
       );
+      this.systemLogger.info(`Downloaded test: ${blobName}`);
     } catch (e) {
-      throw new Error(`Test script: ${blobName} does not exist`);
+      throw new Error(
+        `Test script: ${blobName} in container: ${containerName} does not exist`
+      );
     }
 
     var testScript: string = await this.streamToString(
@@ -74,7 +90,7 @@ export class AzureblobService implements IFileService {
 
     //create directory
     if (!fs.existsSync(this._testDirectory)) {
-      systemLogger.info(
+      this.systemLogger.info(
         `Creating directory for downloaded test: ${this._testDirectory}`
       );
       fs.mkdirSync(this._testDirectory);
@@ -89,29 +105,43 @@ export class AzureblobService implements IFileService {
     return testScript;
   }
 
-  async uploadTestResults(id: string, testResults: TestResult): Promise<void> {
+  async uploadTestResults(
+    id: string,
+    containerFolderName: string,
+    maximumAllowedScreenshots: number,
+    systemLogs: string[],
+    applicationLogs: string[]
+  ): Promise<void> {
     //create container to hold test script and results
     const containerName = this.createContainerName(id);
 
     //get reference to container client (this will upload to floodtest-<testId>/<sample date, eg. 2020-07-16T10:49+00:00>/screenshots/)
-    const screenshotContainerClient = blobServiceClient.getContainerClient(
-      `${containerName}/${Keys.azure_containerFolderName}/${this._screenshotDirectoryName}`
+    const screenshotContainerClient = this._blobServiceClient.getContainerClient(
+      `${containerName}/${containerFolderName}/${this._screenshotDirectoryName}`
     );
 
-    await this.uploadScreenshotsAsync(screenshotContainerClient);
+    await this.uploadScreenshotsAsync(
+      screenshotContainerClient,
+      maximumAllowedScreenshots
+    );
 
     //get reference to container client (this will upload to floodtest-<testId>/<sample date, eg. 2020-07-16T10:49+00:00>/)
-    const logFileContainerClient = blobServiceClient.getContainerClient(
-      `${containerName}/${Keys.azure_containerFolderName}`
+    const logFileContainerClient = this._blobServiceClient.getContainerClient(
+      `${containerName}/${containerFolderName}`
     );
 
-    await this.uploadLogsAsync(logFileContainerClient);
+    await this.uploadLogsAsync(
+      logFileContainerClient,
+      systemLogs,
+      applicationLogs
+    );
   }
 
   public async uploadScreenshotsAsync(
-    screenshotContainerClient: ContainerClient
+    screenshotContainerClient: ContainerClient,
+    maximumAllowedScreenshots: number
   ) {
-    systemLogger.info(`--- Uploading screenshots ---`);
+    this.systemLogger.info(`--- Uploading screenshots ---`);
 
     //find the directory created inside the testResult directory
     const mainTestResultDirectory = fs.readdirSync(this._testResultDirectory);
@@ -132,12 +162,12 @@ export class AzureblobService implements IFileService {
     //apply max screenshot limitations and then loop through screenshots and upload
     const allowedScreenshots = specificTestScreenshots.slice(
       0,
-      this._maximumScreenshotsAllowed
+      maximumAllowedScreenshots
     );
 
     allowedScreenshots.map(async (screenshotName, index) => {
       const screenshotUploadName = `${index + 1}.jpg`;
-      systemLogger.info(
+      this.systemLogger.info(
         `--- Uploading screenshot: ${screenshotUploadName} ---`
       );
 
@@ -154,34 +184,42 @@ export class AzureblobService implements IFileService {
       );
     });
 
-    systemLogger.info(`--- Uploaded all screenshots ---`);
+    this.systemLogger.info(`--- Uploaded all screenshots ---`);
   }
 
-  private async uploadLogsAsync(logFileContainerClient: ContainerClient) {
-    systemLogger.info(
+  private async uploadLogsAsync(
+    logFileContainerClient: ContainerClient,
+    systemLogs: string[],
+    applicationLogs: string[]
+  ) {
+    this.systemLogger.info(
       `--- Uploading file: ${Keys.system_applicationLogFileName} ---`
     );
     await this.uploadFileAsync(
       Keys.system_applicationLogFileName,
+      applicationLogs,
       logFileContainerClient
     );
 
-    systemLogger.info(
+    this.systemLogger.info(
       `--- Uploading file: ${Keys.system_systemLogFileName} ---`
     );
     await this.uploadFileAsync(
       Keys.system_systemLogFileName,
+      systemLogs,
       logFileContainerClient
     );
 
-    systemLogger.info(`--- Uploaded all log files ---`);
+    this.systemLogger.info(`--- Uploaded all log files ---`);
   }
 
   private async uploadFileAsync(
     fileName: string,
+    logArray: string[],
     containerClient: ContainerClient
   ) {
-    const logFile = fs.readFileSync(path.join(this._logDirectory, fileName));
+    const logFile = logArray.join("\n");
+
     const blockBlobClient = containerClient.getBlockBlobClient(fileName);
     const uploadBlobResponse = await blockBlobClient.upload(
       logFile,

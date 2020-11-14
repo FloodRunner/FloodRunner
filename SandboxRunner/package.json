@@ -7,11 +7,14 @@
     "dev": "cross-env NODE_ENV=DEV nodemon build/index.js",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
+    "start:host": "func start",
+    "start:func": "cross-env NODE_ENV=DEV npm-run-all --parallel start:host watch",
     "watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/functions": "^1.2.2",
     "@azure/storage-blob": "^12.1.1",
     "@flood/element": "^1.3.8",
     "@flood/element-cli": "^1.3.8",
@@ -27,6 +30,7 @@
     "logform": "^2.1.2",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.3",
+    "npm-run-all": "^4.1.5",
     "puppeteer": "^5.2.1",
     "rimraf": "^3.0.2",
     "serialize-javascript": "^3.0.0",
@@ -39,6 +43,7 @@
     "@types/child-process-promise": "^2.2.1",
     "@types/node": "^13.13.4",
     "@types/rimraf": "^3.0.0",
+    "@types/winston": "^2.4.4",
     "typescript": "^3.8.3"
   }
 }

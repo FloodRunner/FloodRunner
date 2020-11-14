@@ -32,3 +32,6 @@ api/config/develop.yml
 
 #ignore instructions for internal use
 instructions.txt
+
+#terraform state
+.azuredevops/terraform/.terraform

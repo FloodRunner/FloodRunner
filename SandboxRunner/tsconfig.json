@@ -17,7 +17,7 @@
     "outDir": "./build",
     "skipLibCheck": true /* Ignore node_modules*/,
     /* Redirect output structure to the directory. */
-    "rootDir": "./src",
+    "rootDir": "./Puppeteer",
     /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
@@ -70,5 +70,5 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["**/testscript*.ts", "build", "src/floodTests/**"]
+  "exclude": ["**/testscript*.ts", "build", "Puppeteer/src/floodTests/**"]
 }
