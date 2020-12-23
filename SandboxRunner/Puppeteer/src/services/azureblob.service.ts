@@ -10,7 +10,12 @@ import {
 import * as path from "path";
 
 export class AzureblobService implements IFileService {
-  private _testDirectory = path.join(__dirname, `../testScripts`);
+  private _testScriptDirectoryBasePath = "../../../tmp";
+  private _testScriptDirectoryPath = path.join(
+    this._testScriptDirectoryBasePath,
+    "testScripts"
+  );
+
   private _logDirectory = path.join(__dirname, `../../logs`);
   private _testResultDirectory = path.join(
     __dirname,
@@ -88,23 +93,22 @@ export class AzureblobService implements IFileService {
     );
 
     //create directory
-    if (fs.existsSync(this._testDirectory)) {
-      fs.rmdirSync(this._testDirectory, { recursive: true });
-    }
-
-    if (!fs.existsSync(this._testDirectory)) {
+    if (!fs.existsSync(this._testScriptDirectoryPath)) {
       this.systemLogger.info(
-        `Creating directory for downloaded test: ${this._testDirectory}`
+        `Creating directory for downloaded test: ${this._testScriptDirectoryPath}`
       );
-      fs.mkdirSync(this._testDirectory, { recursive: true });
+      fs.mkdirSync(this._testScriptDirectoryPath, { recursive: true });
       this.systemLogger.info(
-        `Created directory for downloaded test: ${this._testDirectory}`
+        `Created directory for downloaded test: ${this._testScriptDirectoryPath}`
       );
     }
 
     //save file to disk
     const testScriptName = this.createTestScriptPath(id);
-    const testFilePath = path.join(this._testDirectory, testScriptName);
+    const testFilePath = path.join(
+      this._testScriptDirectoryPath,
+      testScriptName
+    );
 
     try {
       fs.writeFileSync(testFilePath, testScript);

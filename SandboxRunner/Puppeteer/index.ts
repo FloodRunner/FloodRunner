@@ -52,17 +52,15 @@ const executeFunction = async (req: HttpRequest): Promise<TestResultDto> => {
   const isDevelopment = browserTestSettings.isDevelopment;
 
   // register tests to run
-  const sourcePath = !isDevelopment ? "" : "build";
-
-  const testScriptPath = azureBlobService.createTestScriptPath(
+  const testScriptName = azureBlobService.createTestScriptPath(
     browserTestSettings.testSettings.id
   );
 
   const tests = [
     `${
       !isDevelopment
-        ? `./build/src/testScripts/${testScriptPath}`
-        : `./Puppeteer/src/floodTests/${testScriptPath}`
+        ? `../../../tmp/testScripts/${testScriptName}` //only writeable directory on Azure Function
+        : `./Puppeteer/src/floodTests/${testScriptName}`
     }`,
   ];
 
