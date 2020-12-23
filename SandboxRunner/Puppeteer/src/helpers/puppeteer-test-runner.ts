@@ -1,7 +1,10 @@
 import { Keys } from "../constants/keys";
 import { NodeVM } from "vm2";
 import fs from "fs";
+import { fs as memfs } from "memfs";
 import process from "process";
+// import { path } from "app-root-path"; //was for NodeVM
+import * as path from "path";
 
 const vm = new NodeVM({
   console: "redirect",
@@ -19,10 +22,29 @@ const vm = new NodeVM({
   },
 });
 
+let testResultBasePath: string;
+
+const calculatePuppeteerTestResultPath = (
+  isDevelopment: boolean,
+  testRunId: string,
+  testName: string
+) => {
+  if (isDevelopment) {
+    testResultBasePath = "./Puppeteer/testResults";
+  } else {
+    testResultBasePath = "../../../tmp"; //only writeable directory when using an Azure Function
+  }
+
+  return path.join(testResultBasePath, testName, testRunId);
+};
+
 const runPuppeteerTest = (
+  testRunId: string,
+  testName: string,
   testScript: string,
   systemLogger: any,
-  applicationLogger: any
+  applicationLogger: any,
+  isDevelopment: boolean
 ) => {
   //bind to the console events inside the vm
   vm.on("console.log", (data) => {
@@ -37,45 +59,66 @@ const runPuppeteerTest = (
     applicationLogger.info(data);
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve: any, reject: any) => {
     try {
+      systemLogger.info(`Current Puppeteer directory is: ${process.cwd()}`);
+
       var puppeteerScript = fs.readFileSync(`${testScript}`, {
         encoding: "utf-8",
       });
 
-      var puppeteerWorkingDirectory = `./${Keys.testResultFolderName}/xx/${Keys.testScreenshotFolderName}`;
+      //create directory in temporary storage
+      let screenshotPath = calculatePuppeteerTestResultPath(
+        isDevelopment,
+        testRunId,
+        testName
+      );
 
-      //create directory
-      if (!fs.existsSync(puppeteerWorkingDirectory)) {
-        systemLogger.info(`Creating directory ${puppeteerWorkingDirectory}`);
-        fs.mkdirSync(puppeteerWorkingDirectory, { recursive: true });
+      if (!fs.existsSync(screenshotPath)) {
+        systemLogger.info(`Creating directory ${screenshotPath}`);
+        fs.mkdirSync(screenshotPath, { recursive: true }); //create directory based on file and run name
+      } else {
+        systemLogger.info(`Directory ${screenshotPath} already exists`);
       }
-
-      process.chdir(puppeteerWorkingDirectory);
 
       var wrappedPuppeteerCode = `
       module.exports = async function (callback) {
           
           (async () => {
             try{
-              const puppeteer = require('puppeteer')
+              const screenshotPath = "${testResultBasePath}/${testName}/${testRunId}"; //for some reason this has to be done like this to keep the slashes
+
+              const puppeteer = require('puppeteer');
+              const path = require('path');
+
+              const browser = await puppeteer.launch({
+                product: "chrome",
+                headless: true,
+              });
               
               ${puppeteerScript}
+
+              browser.close(); //ends puppeteer script
   
-              \n callback(true)
+              \n callback(true, null)
             }catch(err){
               console.log(err)
-              callback(false)
+              callback(false, err)
             }
           })()
       }
     `;
 
       let puppeteerSandbox = vm.run(wrappedPuppeteerCode, "vm.js");
-      puppeteerSandbox((passed: boolean) => {
-        applicationLogger.info("----Puppeteer script completed---");
-        if (passed) resolve();
-        else reject();
+      puppeteerSandbox((passed: boolean, error: string) => {
+        systemLogger.info("----Puppeteer script completed---");
+
+        if (passed) {
+          resolve();
+        } else {
+          systemLogger.error(`Failed with error: ${error}`);
+          reject();
+        }
       });
     } catch (err) {
       systemLogger.error("--- Test run failed ---");
@@ -88,4 +131,5 @@ const runPuppeteerTest = (
 
 export default {
   runPuppeteerTest: runPuppeteerTest,
+  calculateTestPath: calculatePuppeteerTestResultPath,
 };

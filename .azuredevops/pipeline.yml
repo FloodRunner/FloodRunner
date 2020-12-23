@@ -1,0 +1,102 @@
+trigger:
+  branches:
+    include:
+      - master
+
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  #azureSubscription: '1b3ff775-c1d0-4860-9ab5-5465dddc3e41'
+
+  azureSubscription: 'Visual Studio Enterprise – MPN (cfb9bf81-58e9-4274-b0c5-8727832aeb78)'
+
+  # Azure Resource group name
+  azureResourceGroup: 'devops'
+
+  # Function app name
+  functionAppName: 'jbirddevops'
+
+  # Function app deployment slot
+  functionAppDeploymentSlot: 'deployment'
+
+  # Agent VM image name
+  vmImageName: 'vs2017-win2016'
+
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps Function/DevOps Function'
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: |
+          $(workingDirectory)/*.csproj
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+    - task: DotNetCoreCLI@2
+      displayName: Test    
+      inputs:
+        command: 'test'
+        projects: |
+          $(System.DefaultWorkingDirectory)/DevOps Function/**/*.csproj
+      condition: succeeded()
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+      
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'development'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Azure functions app deploy'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              resourceGroupName: $(azureResourceGroup)
+              appType: functionApp
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              deployToSlotOrASE: true
+              slotName: $(functionAppDeploymentSlot)
+          
+          - task: AzureAppServiceManage@0
+            displayName: 'Azure functions slot swop'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              Action: 'Swap Slots'
+              WebAppName: $(functionAppName)
+              ResourceGroupName: $(azureResourceGroup)
+              SourceSlot: '$(functionAppDeploymentSlot)'
+              

@@ -4,6 +4,7 @@ export interface IFileService {
   uploadTestResults(
     id: string,
     containerFolderName: string,
+    testResultPath: string,
     maximumAllowedScreenshots: number,
     systemLogs: string[],
     applicationLogs: string[]

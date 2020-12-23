@@ -9,7 +9,7 @@ const runElementTest = (
   systemLogger: any,
   applicationLogger: any
 ) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve: any, reject: any) => {
     exec(
       `element run ${testScript} ${Keys.showBrowser} --no-sandbox --work-root ./${Keys.testResultFolderName}`
     )

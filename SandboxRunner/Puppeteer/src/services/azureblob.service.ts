@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import { IFileService } from "../interfaces/fileservice.interface";
-import { TestResult } from "../interfaces/test-result.interface";
 import { Keys } from "../constants/keys";
 import {
   BlobServiceClient,
@@ -89,18 +88,29 @@ export class AzureblobService implements IFileService {
     );
 
     //create directory
+    if (fs.existsSync(this._testDirectory)) {
+      fs.rmdirSync(this._testDirectory, { recursive: true });
+    }
+
     if (!fs.existsSync(this._testDirectory)) {
       this.systemLogger.info(
         `Creating directory for downloaded test: ${this._testDirectory}`
       );
-      fs.mkdirSync(this._testDirectory);
+      fs.mkdirSync(this._testDirectory, { recursive: true });
+      this.systemLogger.info(
+        `Created directory for downloaded test: ${this._testDirectory}`
+      );
     }
 
     //save file to disk
     const testScriptName = this.createTestScriptPath(id);
     const testFilePath = path.join(this._testDirectory, testScriptName);
 
-    fs.writeFileSync(testFilePath, testScript);
+    try {
+      fs.writeFileSync(testFilePath, testScript);
+    } catch (e) {
+      throw new Error(`Failed to write test to file system`);
+    }
 
     return testScript;
   }
@@ -108,6 +118,7 @@ export class AzureblobService implements IFileService {
   async uploadTestResults(
     id: string,
     containerFolderName: string,
+    testResultPath: string,
     maximumAllowedScreenshots: number,
     systemLogs: string[],
     applicationLogs: string[]
@@ -122,6 +133,7 @@ export class AzureblobService implements IFileService {
 
     await this.uploadScreenshotsAsync(
       screenshotContainerClient,
+      testResultPath,
       maximumAllowedScreenshots
     );
 
@@ -139,25 +151,50 @@ export class AzureblobService implements IFileService {
 
   public async uploadScreenshotsAsync(
     screenshotContainerClient: ContainerClient,
+    testResultPath: string,
     maximumAllowedScreenshots: number
   ) {
     this.systemLogger.info(`--- Uploading screenshots ---`);
 
-    //find the directory created inside the testResult directory
-    const mainTestResultDirectory = fs.readdirSync(this._testResultDirectory);
-
-    //retrieve the name of the directory created from the test run (should only be one when container runs one test)
-    const specificTestResultDirectoryName = mainTestResultDirectory[0];
-
-    //find all the screenshots created by the test
-    const specificTestScreenshotDirectoryName = path.join(
-      this._testResultDirectory,
-      specificTestResultDirectoryName,
-      this._screenshotDirectoryName
+    this.systemLogger.info(
+      `Current screenshot upload dir is: ${process.cwd()}`
     );
-    const specificTestScreenshots = fs.readdirSync(
-      specificTestScreenshotDirectoryName
+
+    this.systemLogger.info(
+      `Searching test result directory: ${testResultPath}`
     );
+
+    // //find the directory created inside the testResult directory
+    // const mainTestResultDirectory = fs.readdirSync(this._testResultDirectory);
+
+    // //retrieve the name of the directory created from the test run (should only be one when container runs one test)
+    // const specificTestResultDirectoryName: string = mainTestResultDirectory[0] as string;
+
+    // this.systemLogger.info(
+    //   `Found directory name: ${specificTestResultDirectoryName}`
+    // );
+
+    // //find all the screenshots created by the test
+    // const specificTestScreenshotDirectoryName = path.join(
+    //   this._testResultDirectory,
+    //   specificTestResultDirectoryName,
+    //   this._screenshotDirectoryName
+    // );
+
+    // this.systemLogger.info(
+    //   `Searching for results in directory: ${specificTestScreenshotDirectoryName}`
+    // );
+
+    const specificTestScreenshots: string[] = fs.readdirSync(
+      testResultPath
+    ) as string[];
+
+    if (specificTestScreenshots.length === 0) {
+      this.systemLogger.info(`--- No screenshots to upload ---`);
+      return;
+    }
+
+    this.systemLogger.info(`Found screenshots: ${specificTestScreenshots}`);
 
     //apply max screenshot limitations and then loop through screenshots and upload
     const allowedScreenshots = specificTestScreenshots.slice(
@@ -175,7 +212,7 @@ export class AzureblobService implements IFileService {
         screenshotUploadName
       );
       const screenshotFile = fs.readFileSync(
-        path.join(specificTestScreenshotDirectoryName, screenshotName)
+        path.join(testResultPath, screenshotName)
       );
       const uploadBlobResponse = await blockBlobClient.upload(
         screenshotFile,

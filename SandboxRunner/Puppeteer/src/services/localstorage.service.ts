@@ -1,12 +1,8 @@
-import path from "path";
 import fs from "fs";
 import { IFileService } from "../interfaces/fileservice.interface";
-import { TestResult } from "../interfaces/test-result.interface";
 
 export class LocalStorageService implements IFileService {
   constructor(private systemLogger) {}
-
-  private _testDirectory = path.join(__dirname, `../testScripts`);
 
   public createTestScriptPath(id: string): string {
     return `testscript_${id}.ts`;
@@ -15,6 +11,7 @@ export class LocalStorageService implements IFileService {
   uploadTestResults(
     id: string,
     containerFolderName: string,
+    testResultPath: string,
     maximumAllowedScreenshots: number,
     systemLogs: string[],
     applicationLogs: string[]
@@ -24,30 +21,22 @@ export class LocalStorageService implements IFileService {
 
   async downloadFile(id: string): Promise<string> {
     let testScript: string = null;
-    try {
-      this.systemLogger.info(`Reading script: ${id}.ts`);
-      testScript = fs.readFileSync(
-        `./Puppeteer/src/floodTests/${id}.ts`,
-        "utf-8"
-      );
-    } catch (e) {
-      throw new Error(`script does not exist`);
-    }
-
-    //create directory
-    if (!fs.existsSync(this._testDirectory)) {
-      this.systemLogger.info(
-        `Creating directory for downloaded test: ${this._testDirectory}`
-      );
-      fs.mkdirSync(this._testDirectory);
-    }
-
-    //save file to disk
     const testScriptName = this.createTestScriptPath(id);
-    const testFilePath = path.join(this._testDirectory, testScriptName);
+    const scriptFile = `./Puppeteer/src/floodTests/${testScriptName}`;
+    try {
+      this.systemLogger.info(
+        `Current directory ${process.cwd()}. Reading script: ${scriptFile}`
+      );
 
-    fs.writeFileSync(testFilePath, testScript);
+      testScript = fs.readFileSync(scriptFile, "utf-8") as string;
 
-    return testScript;
+      this.systemLogger.info(`Found script: ${scriptFile}`);
+    } catch (e) {
+      throw new Error(
+        `Current directory ${process.cwd()}. Script ${scriptFile} does not exist.`
+      );
+    }
+
+    return null;
   }
 }

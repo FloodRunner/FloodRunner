@@ -17,7 +17,7 @@ const presentWorkingDirectory = process.cwd();
 
 // delay helper function
 const delay = (millis: number) =>
-  new Promise((resolve) => {
+  new Promise((resolve: any) => {
     setTimeout((_) => resolve(), millis);
   });
 
@@ -37,13 +37,17 @@ function logResults(results: TestResult[], systemLogger: any) {
 }
 
 async function runTests(
+  testRunId: string,
+  testName: string,
   floodTests: string[],
   testType: TestType,
   maximumRetries: number,
   systemLogger: any,
-  applicationLogger: any
+  applicationLogger: any,
+  isDevelopment: boolean
 ) {
   var testResults: TestResult[] = [];
+
   for (const test of floodTests) {
     var testSuccessful = false;
 
@@ -65,9 +69,12 @@ async function runTests(
           );
         } else if (testType === TestType.Puppeteer) {
           await puppeteerRunner.runPuppeteerTest(
+            testRunId,
+            testName,
             test,
             systemLogger,
-            applicationLogger
+            applicationLogger,
+            isDevelopment
           );
           process.chdir(presentWorkingDirectory);
         }
