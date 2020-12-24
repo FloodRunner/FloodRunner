@@ -7,4 +7,6 @@ export interface TestResultDto {
   isSuccessful: boolean;
   numberTimesExecuted: number;
   executionTimeInSeconds: number;
+  systemLogs: string[];
+  applicationLogs: string[];
 }

@@ -4,8 +4,8 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-const minInterval = 60;
-const intervalMultiple = 10;
+const minInterval = 1;
+const intervalMultiple = 1;
 
 @ValidatorConstraint({ name: 'testInterval', async: false })
 export class TestInterval implements ValidatorConstraintInterface {

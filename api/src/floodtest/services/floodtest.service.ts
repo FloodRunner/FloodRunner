@@ -7,7 +7,6 @@ import { CreateFloodTestDto } from '../dtos/create-floodtest.dto';
 import { AgendaService } from '../../scheduling/services/agenda.service';
 import { FileService } from '../../storage/services/fileservice.service';
 import { TestFileDto } from '../dtos/test-file.dto';
-import { RabbitQueueService } from '../../messaging/services/rabbit-queue.service';
 import { FloodTestRepository } from '../repositories/floodtest.repository';
 import { User } from '../../auth/repositories/schemas/user.schema';
 import { FloodTestResultSummaryRepository } from '../repositories/floodtest-result-summary.repository';
@@ -26,21 +25,18 @@ export class FloodtestService {
     private floodTestResultSummaryModel: Model<FloodTestResultSummary>,
     private readonly agendaService: AgendaService,
     private readonly fileService: FileService,
-    private readonly queueService: RabbitQueueService,
   ) {
-    //setup job service
-    agendaService.setup();
-
-    //redefine all agenda jobs
-    this.findAllIds().then(floodTestIds => {
-      //re-define all agenda jobs here
-      floodTestIds.forEach(floodTestId => {
-        agendaService.defineJob(floodTestId);
-      });
-
-      //start job service
-      agendaService.start();
-    });
+    // //setup job service
+    // agendaService.setup();
+    // //redefine all agenda jobs
+    // this.findAllIds().then(floodTestIds => {
+    //   //re-define all agenda jobs here
+    //   floodTestIds.forEach(floodTestId => {
+    //     agendaService.defineJob(floodTestId);
+    //   });
+    //   //start job service
+    //   agendaService.start();
+    // });
   }
 
   /**
@@ -149,14 +145,6 @@ export class FloodtestService {
    */
   async findById(user: User, id: string): Promise<FloodTest> {
     return await this.floodTestRepository.findById(user, id);
-  }
-
-  /**
-   * Helper method to test sending to queue [DELETE]
-   */
-  async sendQueueMessage() {
-    // this.queueService.sendQueueMessage('5eb5ba4427747c1693a29edb');
-    this.queueService.sendQueueMessage('5eb696b37af25e011f37742d');
   }
 
   /**
