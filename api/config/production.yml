@@ -1,0 +1,25 @@
+mongodb:
+  hostType: "atlas"
+  host: "__MONGODB_HOST__"
+  user: "__MONGODB_USER__"
+  password: "__MONGODB_PASSWORD__"
+  connectionString: "__MONGODB_CONNECTIONSTRING__"
+
+server:
+  port: 80
+  fileServiceStrategy: "AZURE"
+
+azureStorage:
+  accountName: "__AZURESTORAGE_ACCOUNTNAME__"
+  accessKey: "__AZURESTORAGE_ACCESSKEY__"
+
+auth:
+  domain: "javaadpatel.eu.auth0.com"
+  audience: "floodrunnerapi"
+
+sandboxRunner:
+  url: "__SANDBOXRUNNER_URL__"
+
+flood:
+  maximumAllowedScreenshots: 10
+  maxRetries: 1
