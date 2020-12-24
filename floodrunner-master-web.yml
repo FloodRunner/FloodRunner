@@ -42,6 +42,11 @@ stages:
         # npm run test --if-present
       displayName: 'npm install, build and test'
       workingDirectory: '$(System.DefaultWorkingDirectory)/web'
+
+    - script: |
+        npm run postbuild
+      displayName: 'npm postbuild'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/web'
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
