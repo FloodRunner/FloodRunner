@@ -7,7 +7,6 @@
     "dev": "cross-env NODE_ENV=DEV nodemon build/index.js",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "copy-files": "copyfiles -f \"Puppeteer/src/floodTests/*.ts\" build/src/floodTests",
     "start:host": "func start",
     "start:func": "cross-env NODE_ENV=DEV npm-run-all --parallel start:host watch",
     "watch": "tsc -w"

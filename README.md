@@ -35,6 +35,7 @@ The process of using FloodRunner is simple and easy:
 ## Index
 
 - [Quickstart](#quickstart)
+- [Browser Tests](#browser-tests)
 - [Deploying FloodRunner](#deploying-floodrunner)
   - [1. Deploying Traefik](#1-deploying-traefik)
   - [2. Deploying RabbitMq](#2-deploying-rabbitMq)
@@ -62,6 +63,46 @@ Your tests will display on the overview page showing their status (passing/faili
 Click `View Results` to see detailed results of your test executions. Here you can view and download your test script using the `View Script` button and delete the test if its no longer needed. A graph is shown with the latest test executions and clicking on a bar will download that tests logs and any screenshots.
 
 ![FloodRunner Results Page](/resources/images/usage/results_page.png)
+
+## Browser Tests
+
+FloodRunner allows you to create the following browser tests:
+
+- Flood's [Element](https://element.flood.io/)
+- [Puppeteer](https://pptr.dev/)
+
+### Puppeteer
+
+Puppeteer scripts are fully supported with a few caveats:
+
+- Puppeteer and a browser instance is already provided so your script should use the provided browser instance
+- Screenshots must be saved to a particular location (due to the read-only nature of Azure Functions) so when you save a screenshot, ensure that you append it to the path variable `screenshotPath` as shown below
+
+Shown below is what a normal script would look like when uploaded to FloodRunner.
+
+#### Normal Script
+
+```
+const puppeteer = require('puppeteer');
+const browser = await puppeteer.launch({
+  product: "chrome",
+  headless: true,
+});
+
+const page = await browser.newPage();
+await page.goto("https://example.com");
+await page.screenshot({ path: "screenshot.png" });
+browser.close();
+
+```
+
+#### Uploaded Script
+
+```
+const page = await browser.newPage();
+await page.goto("https://example.com");
+await page.screenshot({ path: path.join(screenshotPath, "screenshot.png") });
+```
 
 ## Deploying FloodRunner
 
