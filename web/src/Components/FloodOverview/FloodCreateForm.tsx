@@ -11,7 +11,7 @@ import {
   TestType,
   TestUploadType,
 } from "../../Models/Api/FloodTest";
-import {ScriptPlaceholders} from "./Placeholders";
+import { ScriptPlaceholders } from "./Placeholders";
 import history from "../../Utils/history";
 import elementLogo from "../../images/script_types/flood_element.png";
 import puppeteerLogo from "../../images/script_types/puppeteer.png";
@@ -20,7 +20,7 @@ import "./floodtest-overview-style.css";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 require("codemirror/mode/javascript/javascript");
-require('codemirror/addon/display/placeholder')
+require("codemirror/addon/display/placeholder");
 
 interface IProps {
   createFloodTest: CreateFloodTest;
@@ -44,7 +44,9 @@ const FloodCreateForm = ({
   const [selectedUploadType, setSelectedUploadType] = useState<string>(
     TestUploadType.Script
   );
-  const [scriptPlaceholder, setScriptPlaceholder] = useState<string>(ScriptPlaceholders.puppeteerPlaceholder);
+  const [scriptPlaceholder, setScriptPlaceholder] = useState<string>(
+    ScriptPlaceholders.puppeteerPlaceholder
+  );
 
   const renderBetaWarning = () => {
     return (
@@ -125,12 +127,12 @@ const FloodCreateForm = ({
           .required("Description cannot be empty"),
         interval: yup
           .number()
-          .min(60, "Minimum interval is 60 minutes during Beta")
+          .min(1, "Minimum interval is 60 minutes during Beta")
           .test(
             "interval-multiple",
             "Interval must be a multiple of 10 minutes",
             function (value) {
-              return value % 10 === 0;
+              return value % 1 === 0;
             }
           )
           .required("Interval is required"),
@@ -296,7 +298,7 @@ const FloodCreateForm = ({
                           mode: "javascript",
                           theme: "material",
                           lineNumbers: true,
-                          placeholder: scriptPlaceholder
+                          placeholder: scriptPlaceholder,
                         }}
                         onChange={(editor, data, value) => {
                           setFieldValue("testScript", value);

@@ -1,7 +1,0 @@
-node_modules
-tmp
-logs
-.git
-cache
-./config/default.yml
-docker-compose.yml

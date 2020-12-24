@@ -3,7 +3,6 @@ import { FloodTest } from '../../floodtest/repositories/schemas/flood-test.schem
 import { Keys } from 'src/constants/keys';
 import { Helpers } from '../../floodtest/helpers/helpers';
 import { IJobService } from '../interfaces/jobservice.interface';
-import { RabbitQueueService } from '../../messaging/services/rabbit-queue.service';
 
 const Agenda = require('agenda');
 
@@ -11,11 +10,12 @@ const Agenda = require('agenda');
 export class AgendaService implements IJobService {
   private _logger = new Logger('AgendaService');
   private agenda;
+  private callbackFunction: (message: string) => void;
 
-  constructor(private readonly queueService: RabbitQueueService) {}
+  constructor() {}
 
   /**
-   * Setup Agenda and register queue callback functions
+   * Setup Agenda
    */
   async setup() {
     this._logger.debug('Setting up agenda...');
@@ -32,8 +32,11 @@ export class AgendaService implements IJobService {
   /**
    * Start Agenda job processing
    */
-  async start() {
+  async start(callbackFunction: (message: string) => void): Promise<void> {
     this._logger.log('Starting Agenda Scheduler');
+    //save callback function
+    this.callbackFunction = callbackFunction;
+    //start Agenda
     this.agenda.start();
   }
 
@@ -47,7 +50,8 @@ export class AgendaService implements IJobService {
     this.agenda.define(Helpers.createJobName(floodTestId), async job => {
       const { testId } = job.attrs.data;
       this._logger.log(`Queueing job for test id: ${testId}`);
-      await this.queueService.sendQueueMessage(testId);
+      // await this.queueService.sendQueueMessage(testId);
+      await this.callbackFunction(testId);
     });
   }
 
@@ -63,7 +67,8 @@ export class AgendaService implements IJobService {
     this.agenda.define(Helpers.createJobName(floodTest._id), async job => {
       const { testId } = job.attrs.data;
       this._logger.log(`Running job, with testId: ${testId}`);
-      await this.queueService.sendQueueMessage(testId);
+      // await this.queueService.sendQueueMessage(testId);
+      await this.callbackFunction(testId);
     });
     await this.agenda.every(
       Helpers.createJobSchedule(floodTest.interval),

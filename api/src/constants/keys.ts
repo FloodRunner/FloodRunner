@@ -21,13 +21,6 @@ export class Keys {
   static mongoDbPassword =
     process.env.MONGODB_PASSWORD || config.get('mongodb.password');
 
-  static rabbitMqConnectionString =
-    process.env.RABBITMQ_CONNECTIONSTRING ||
-    config.get('rabbitMq.connectionString');
-  static rabbitMqElementQueueName =
-    process.env.RABBITMQ_ELEMENTQUEUENAME ||
-    config.get('rabbitMq.elementQueueName');
-
   static azureStorage_AccountName =
     process.env.AZURESTORAGE_ACCOUNTNAME ||
     config.get('azureStorage.accountName');
@@ -67,4 +60,6 @@ export class Keys {
   //this corresponds to the folder structure stored in blob storag
   //(ie. the logical folder where screenshots are stored)
   static flood_screenshotsSubfolderName = 'screenshots';
+
+  static sandboxRunner_url = config.get('sandboxRunner.url');
 }

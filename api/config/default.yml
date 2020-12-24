@@ -17,3 +17,6 @@ auth:
 flood:
   maximumAllowedScreenshots: 10
   maxRetries: 1
+
+sandboxRunner:
+  url: http://localhost:7071/api/Puppeteer

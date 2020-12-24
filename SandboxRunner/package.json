@@ -7,11 +7,14 @@
     "dev": "cross-env NODE_ENV=DEV nodemon build/index.js",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
+    "start:host": "func start",
+    "start:func": "cross-env NODE_ENV=DEV npm-run-all --parallel start:host watch",
     "watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/functions": "^1.2.2",
     "@azure/storage-blob": "^12.1.1",
     "@flood/element": "^1.3.8",
     "@flood/element-cli": "^1.3.8",
@@ -25,12 +28,15 @@
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.19",
     "logform": "^2.1.2",
+    "memfs": "^3.2.0",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.3",
-    "puppeteer": "^5.2.1",
+    "npm-run-all": "^4.1.5",
+    "puppeteer": "^5.4.0",
     "rimraf": "^3.0.2",
     "serialize-javascript": "^3.0.0",
     "ts-node": "^8.10.1",
+    "uuid": "^8.3.2",
     "vm2": "^3.9.2",
     "winston": "^3.2.1"
   },
@@ -39,6 +45,9 @@
     "@types/child-process-promise": "^2.2.1",
     "@types/node": "^13.13.4",
     "@types/rimraf": "^3.0.0",
-    "typescript": "^3.8.3"
+    "@types/uuid": "^8.3.0",
+    "@types/winston": "^2.4.4",
+    "copyfiles": "^2.4.1",
+    "typescript": "^4.1.2"
   }
 }

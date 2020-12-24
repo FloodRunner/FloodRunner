@@ -1,6 +1,3 @@
-/**
- * Dto used by SandboxRunner to share information of test runs
- */
 export interface TestResultDto {
   testId: string;
   testRunName: string;
