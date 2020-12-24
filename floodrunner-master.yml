@@ -30,6 +30,20 @@ stages:
       vmImage: $(vmImageName)
       
     steps:
+    
+    - task: replacetokens@3
+      displayName: "Replace secrets in production.yml file"
+      inputs:
+        targetFiles: '$(System.DefaultWorkingDirectory)/api/config/production.yml'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '__'
+        tokenSuffix: '__'
+        useLegacyPattern: false
+        enableTelemetry: true
+
     - task: NodeTool@0
       inputs:
         versionSpec: '12.x'
