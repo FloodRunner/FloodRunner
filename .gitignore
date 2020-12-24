@@ -13,6 +13,7 @@
 **/SandboxRunner/docker-compose.yml
 **/SandboxRunner/src/testScripts/**
 **/SandboxRunner/testResult/**
+**/SandboxRunner/Puppeteer/testResults/**
 
 #ignore secrets files
 k8s/traefik/traefik-secrets.yml
