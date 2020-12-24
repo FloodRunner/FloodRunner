@@ -46,7 +46,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/web'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/web/build'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
@@ -77,4 +77,4 @@ stages:
               appName: $(webAppName)
               runtimeStack: 'NODE|12-lts'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-              startUpCommand: 'npm run start'
+              #startUpCommand: 'npm run start'
