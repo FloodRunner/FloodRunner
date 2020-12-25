@@ -77,5 +77,6 @@ stages:
               appType: 'functionAppLinux'
               appName: '$(webAppName)'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              deploymentMethod: zipDeploy
               runtimeStack: 'DOCKER|microsoft/azure-functions-node8:2.0'
               appSettings: '-ENABLE_ORYX_BUILD true -SCM_DO_BUILD_DURING_DEPLOYMENT true -WEBSITE_RUN_FROM_PACKAGE 0'
