@@ -12,7 +12,7 @@ variables:
   azureSubscription: 'f32ad587-a9bb-41f6-84b9-79eea5167fbb'
   
   # Web app name
-  webAppName: 'sandboxrunner'
+  webAppName: 'floodrunner-sandboxrunner-api'
   
   # Environment name
   environmentName: 'floodrunner'
