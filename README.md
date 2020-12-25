@@ -26,16 +26,22 @@ The process of using FloodRunner is simple and easy:
 #### Features:
 
 - <strong>Schedule browser tests</strong>: Easily schedule your browser tests to ensure your application is being continously tested.
-- <strong>Multiple scripting frameworks</strong>: Supports both [Puppeteer](https://pptr.dev/) and [Element](https://element.flood.io/) scripts.
+- <strong>On-demand browser tests</strong>: Create a Personal Access Token and run your browser test via an API call.
+- <strong>Multiple browser test types</strong>: Supports both [Puppeteer](https://pptr.dev/) and [Element](https://element.flood.io/) scripts.
 - <strong>Detailed Results</strong>: View detailed results of your test executions including all log output, screenshots and execution time.
 - <strong>Integrate with Flood.io (coming soon)</strong>: Leverage Flood.io to run your scripts as load tests (applies to Element scripts only)
 - <strong>Secure login and API authorization</strong>: Secured using Auth0.com ensuring that login is secure and that data is completely isolated between users.
-- <strong>Cloud native</strong>: Components are dockerized and designed to run in Kubernetes, including all relevant configuration scripts needed for deployment and configuration.
+- <strong>Cloud native</strong>: Cloud-architecture enabled allowing you to easily deploy the components to a cloud provider like Azure
+
+#### Who is this for?
+
+This is for anyone who wants to run browser tests on either a fixed schedule or on demand via a powerful API. No complex setup required, just paste in your script and see the results.
 
 ## Index
 
 - [Quickstart](#quickstart)
 - [Browser Tests](#browser-tests)
+- [REST API](#rest-api)
 - [Deploying FloodRunner](#deploying-floodrunner)
   - [1. Deploying Traefik](#1-deploying-traefik)
   - [2. Deploying RabbitMq](#2-deploying-rabbitMq)
@@ -104,9 +110,23 @@ await page.goto("https://example.com");
 await page.screenshot({ path: path.join(screenshotPath, "screenshot.png") });
 ```
 
+## Rest API
+
+The NestJS backend API is fully Swagger compatible and can be accessed by creating an access token and providing it in the `x-api-key` request header when sending a request.
+
+### Creating an Access Token
+
+Open to the settings menu and select `Personal access token`
+![Settings Pane](/resources/images/usage/settings_pane.png)
+
+Then create a token by clicking the `Create Token` button
+![Personal Access Token Screen](/resources/images/usage/personal_access_token.png)
+
+You can then include this token in any request made to the backend API.
+
 ## Deploying FloodRunner
 
-FloodRunner is fully cloud native and can be deployed into any Kubernetes environment. The architecture is shown below
+FloodRunner is fully cloud native and can be deployed into any cloud environment. The architecture shown below is when deployed to Azure
 
 ![FloodRunner Architecture](/resources/images/architecture.png)
 
@@ -114,64 +134,21 @@ FloodRunner is fully cloud native and can be deployed into any Kubernetes enviro
 
 Prerequisites:
 
-- A Kubernetes cluster in order to setup FloodRunner.
-- [Skaffold](https://skaffold.dev/) installed (alternatively you can deploy the k8s yml files individually)
+- An Azure subscription to host FloodRunner.
 
-The deployments are fully managed by a [Skaffold](https://skaffold.dev/) script which can be found in the `skaffold.yml` file. This file will deploy the underlying kubernetes yml files located in the `k8s` directory.
+### 1. Provision infrastructure
 
-### 1. Deploying Traefik
+You will need to provision the following components in Azure:
 
-Traefik is used as the ingress controller for the K8s cluster and handles all the routing. The Traefik yml scripts can be found in the `k8s/traefik` folder.
+- A Linux-Based App Service Plan (for the API and frontend) <strong>NB. If you use a Windows app service plan, ensure that you change the startup command for the React frontend in the yml pipeline</strong>
+- An Azure Web app for the React front-end
+- An Azure Web app for the NestJS backend
+- An Azure Functions app for the SandboxRunner API
+- An Azure storage account for storing tests and test results
 
-Traefik integrates with [Let's Encrypt](https://letsencrypt.org/) to automatically retreive SSL certificates. FloodRunner uses CloudFlare as its DNS provider and Traefik makes use of your CloudFlare details in order to validate the challenge issued by Let's Encrypt to prove domain ownership. If you would like to change the DNS provider refer to the [Traefik documentation](https://docs.traefik.io/https/acme/) for instructions.
+Additionally, you will need a MongoDB database, you can either use one Azure or use a free one through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
-You will need to configure the `traefik.yml` file according to your settings. The follow lines need to changed to your CloudFlare email address:
-
-> --certificatesresolvers.le.acme.email=javaadpatel@gmail.com
-
-> name: CF_API_EMAIL value: javaadpatel@gmail.com
-
-Then you need to rename the file `traefik-secrets.yml.bak` to `traefik-secrets.yml` and insert your CloudFlare global API key.
-
-Once configured, run `skaffold run -p traefik` this will setup Traefik and a default `WhoAmI` pod which can be used to check that the Traefik integration with Let's Encrypt and routing is working correctly. The `WhoAmI` pod will be accessible on `https://<YOUR DOMAIN>/healthcheck`.
-
-Then get the Traefik external IP using `kubectl get services` to retrieve the Traefik service. This IP address can then be put into CloudFlare (Or other DNS Provider) to get traffic into the cluster using an A record set to the Traefik External IP Address.
-
-NB. For CloudFlare ensure A record is proxied and SSL Setting is set to `Full`
-
-### 2. Deploying RabbitMq
-
-RabbitMq is used as the messaging service for scheduling test executions and also for communicating from the Sandboxed Kubernetes Browser jobs and the FloodRunner NestJs API.
-
-Ensure Helm is installed on your machine, [install instructions](https://helm.sh/docs/intro/install/). Then complete the following steps:
-
-- Create a namespace for RabbitMq to be deployed into using `kubectl create namespace rabbit`
-- Add the helm repo using `helm repo add bitnami https://charts.bitnami.com/bitnami`
-- Install RabbitMq using `helm install rabbit bitnami/rabbitmq --namespace rabbit`
-- Once installed, username will be `user` and password can be obtained using `(kubectl get secret --namespace rabbit rabbit-rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)`. These credentials can then be used in the `api-secrets.yml` file to specify secrets for the API deployment.
-- Run `skaffold run -p rabbitmq` to create the Traefik routes for RabbitMq. This will create a Traefik rule to allow you to access the RabbitMQ management interface on `http://<traefikExternalIp>:15672/rabbitmq/management/#/`. It will also also expose the RabbitMq instance and then the amqp connection string will be `amqp://<rabbitmq-user-name>:<rabbitmq-password>@<traefikExternalIp>` allowing you to access it from outside the cluster if desired.
-
-### 3. Deploying MongoDB
-
-MongoDB is used for the storing the tests and test results as well as by [Agenda](https://github.com/agenda/agenda) for scheduling the test runs.
-
-You will need to configure the `mongodb-configmap.yml` file and change the value of `MONGO_INITDB_ROOT_USERNAME` to be the username you want and then also change the value of `MONGO_INITDB_ROOT_PASSWORD` in the `mongodb-deployment.yml` file to the password you want.
-
-Once configured, run `skaffold run -p mongodb` this will setup a MongoDb database that uses a persistent volume to store data in the Kuberenetes cluster.
-
-### 4. Deploying FloodRunner NestJs API
-
-The API controls all the operations relating to test creation, modification, deletion and kicking off the kubernetes job to execute the browser tests.
-
-You will need to configure the `api-configmap.yml` file ensuring that you input the correct Auth0 settings for secure login, and azure storage account name.
-
-Then you need to rename the `api.secrets.yml.bak` file to `api.secrets.yml` and input the required secrets such as the MongoDB database username/password, the RabbitMQ username/password and the Azure storage access key.
-
-Once configured, run `skaffold run -p api` this will setup the FloodRunner NestJS API. Ensure that you are pulling the correct (and latest) docker image from whichever registry you choose.
-
-You will then need to login to your DNS provider (eg. CloudFlare) and create a CNAME record for `app` with a value of `<YOUR DOMAIN>`. This will ensure that Traefik is able to route to your API.
-
-#### 4.1 Setting up Azure Blob Storage
+#### 1.1 Setting up Azure Blob Storage
 
 If you choose to use Azure blob storage for storing the browser test logs and screenshots, it is important to configure the CORS origins in the portal to include to allow the frontend web portal to fetch the resources. For a broad configuration use:
 
@@ -183,17 +160,17 @@ If you choose to use Azure blob storage for storing the browser test logs and sc
 
 If this is not configured you will receive CORS errors when fetching the resources.
 
-### 5. Deploying FloodRunner React Web App
+### 2. Deploy React frontend, NestJS API and SandboxRunner API
 
-The front end allows users to create/manage browser tests and view the results of those tests.
+You can either manually deploy each of the components to Azure, or use the `floodrunner-pipeline.yml`, in the `.azuredevops` folder, as a template pipeline for an Azure DevOps pipeline.
 
-You will need to configure the `web-configmap.yml` file and ensure you put in the correct settings for your Auth0 instance and also the correct url for your floodrunner api, which should be at `https://app.<YOUR DOMAIN>/api`.
+The yml file includes all the required steps to deploy each of the components.
 
-Once configured, run `skaffold run -p web` this will setup the FloodRunner ReactJS Frontend. Ensure that you are pulling the correct (and latest) docker image from whichever registry you choose.
+> NB. For deploying the NestJS Backend API there are a number of secrets that need to be configured as pipeline variables. These get inserted into the `production.yml` config file and used when the application runs.
 
 ## Contributing
 
-Pull requests and feedback are welcomed.
+If you've enjoyed or even hated using this project please let me know throught a pull requests or just open an issue.
 
 ## Reporting Issues
 
