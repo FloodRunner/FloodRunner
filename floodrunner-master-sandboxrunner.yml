@@ -73,8 +73,9 @@ stages:
           - task: AzureFunctionApp@1
             displayName: "Deploy SandboxRunner API"
             inputs:
-              azureSubscription: $(azureSubscription)
+              azureSubscription: '$(azureSubscription)'
               appType: 'functionAppLinux'
-              appName: $(webAppName)
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+              appName: '$(webAppName)'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               runtimeStack: 'DOCKER|microsoft/azure-functions-node8:2.0'
+              appSettings: '-ENABLE_ORYX_BUILD true -SCM_DO_BUILD_DURING_DEPLOYMENT true -WEBSITE_RUN_FROM_PACKAGE 0'
