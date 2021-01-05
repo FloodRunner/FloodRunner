@@ -117,10 +117,10 @@ The NestJS backend API is fully Swagger compatible and can be accessed by creati
 ### Creating an Access Token
 
 Open to the settings menu and select `Personal access token`
-![Settings Pane](/resources/images/usage/settings_pane.png)
+![Settings Pane](/resources/images/usage/settings.png)
 
 Then create a token by clicking the `Create Token` button
-![Personal Access Token Screen](/resources/images/usage/personal_access_token.png)
+![Personal Access Token Screen](/resources/images/usage/access_token.png)
 
 You can then include this token in any request made to the backend API.
 
