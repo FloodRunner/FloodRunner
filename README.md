@@ -173,6 +173,13 @@ The yml file includes all the required steps to deploy each of the components.
 
 > NB. For deploying the NestJS Backend API there are a number of secrets that need to be configured as pipeline variables. These get inserted into the `production.yml` config file and used when the application runs.
 
+## Learn More
+
+If you're interested to learn more about FloodRunner then check out these blog posts:
+
+- [Introducing FloodRunner: Automated monitoring using Flood Element tests](https://javaadpatel.com/introducing-floodrunner/)
+- [Monitoring applications made easy with FloodRunner](https://javaadpatel.com/monitoring-applications-made-easy-with-floodrunner/)
+
 ## Contributing
 
 If you've enjoyed or even hated using this project please let me know throught a pull requests or just open an issue.
