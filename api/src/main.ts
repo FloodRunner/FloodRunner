@@ -19,13 +19,15 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   //setup cors
   app.enableCors();
 
   await app.listen(Keys.serverPort);
-  logger.debug(`Application is running on: ${await app.getUrl()}`);
+  const appUrl = await app.getUrl();
+  logger.debug(`Application is running on: ${appUrl}`);
+  logger.debug(`Swagger UI running on: ${appUrl}/swagger`);
 
   if (module.hot) {
     module.hot.accept();

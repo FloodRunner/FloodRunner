@@ -114,6 +114,11 @@ await page.screenshot({ path: path.join(screenshotPath, "screenshot.png") });
 
 The NestJS backend API is fully Swagger compatible and can be accessed by creating an access token and providing it in the `x-api-key` request header when sending a request.
 
+### Swagger UI
+
+The Swagger UI can be accessed on the path `/swagger` as shown below
+![Swagger UI](/resources/images/usage/swagger_ui.png)
+
 ### Creating an Access Token
 
 Open to the settings menu and select `Personal access token`

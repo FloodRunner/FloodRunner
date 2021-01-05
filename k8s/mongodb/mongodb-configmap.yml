@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mongo-config
-  #namespace: mongo-namespace # Change this
-data:
-  MONGO_INITDB_ROOT_USERNAME: jbird # Change this
