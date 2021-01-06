@@ -38,6 +38,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from '../auth/repositories/schemas/user.schema';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiAccessTokenAuthGuard } from 'src/access-token/guards/api-access-token-auth.guard';
+import { FloodTestJobService } from './services/flood-test-job.service';
 
 @ApiTags('floodrunner')
 @Controller('floodtest')
@@ -45,9 +46,12 @@ import { ApiAccessTokenAuthGuard } from 'src/access-token/guards/api-access-toke
 export class FloodtestController {
   private _logger = new Logger('FloodTestController');
 
-  constructor(private readonly floodTestService: FloodtestService) {}
+  constructor(
+    private readonly floodTestService: FloodtestService,
+    private readonly floodTestJobService: FloodTestJobService,
+  ) {}
 
-  //#region Create Flood Test
+  //#region Create Browser Test
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -73,10 +77,10 @@ export class FloodtestController {
     },
   })
   @ApiOperation({
-    summary: 'Create a Browser Test for scheduled monitoring',
+    summary: 'Create a browser test for scheduled monitoring',
   })
   @ApiCreatedResponse({
-    description: 'Browser Test was successfully created.',
+    description: 'browser test was successfully created.',
   })
   @Post()
   @UseInterceptors(
@@ -114,10 +118,10 @@ export class FloodtestController {
 
   //#region Get All Tests
   @ApiOperation({
-    summary: 'Returns all created Flood Tests',
+    summary: 'Returns all created browser tests',
   })
   @ApiOkResponse({
-    description: 'All the created Flood Tests',
+    description: 'All the created browser tests',
     isArray: true,
     type: () => FloodTestDto,
   })
@@ -127,19 +131,18 @@ export class FloodtestController {
   }
   //#endregion
 
-  //this can be uncommented when the `sendQueue` method is done as this conflicts with it when routing
   //#region Get Test By Id
   @ApiOperation({
-    summary: 'Returns Flood Element test with specified id',
+    summary: 'Returns browser test with specified id',
   })
   @ApiOkResponse({
-    description: 'Created Flood Element test',
+    description: 'Created browser test',
     type: () => FloodTestDto,
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'Flood Element test scenario id',
+    description: 'Browser test id',
   })
   @Get('/:id')
   async findById(
@@ -150,7 +153,7 @@ export class FloodtestController {
   }
   //#endregion
 
-  //#region Updated Flood Test
+  //#region Update Browser Test
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -173,12 +176,12 @@ export class FloodtestController {
     },
   })
   @ApiOperation({
-    summary: 'Update the Flood Test Scenario',
+    summary: 'Update the browser test',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'Flood Element test scenario id',
+    description: 'Browser test id',
   })
   @Patch('/:id')
   @UseInterceptors(
@@ -209,14 +212,14 @@ export class FloodtestController {
   }
   //#endregion
 
-  //#region Delete Flood Test
+  //#region Delete Browser Test
   @ApiOperation({
-    summary: 'Deletes the Flood Test Scenario',
+    summary: 'Deletes the browser test',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'Flood Element test scenario id',
+    description: 'Browser test id',
   })
   @Delete('/:id')
   async delete(@GetUser() user: User, @Param('id') id: string) {
@@ -224,19 +227,80 @@ export class FloodtestController {
   }
   //#endregion
 
-  // @Get('/send')
-  // sendQueue() {
-  //   this.floodTestService.sendQueueMessage();
-  // }
-
-  //#region Download Flood Test script
+  //#region Run Browser Test
   @ApiOperation({
-    summary: 'Downloads the Flood Element test script',
+    summary: 'Run browser test using id',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'Flood Element test scenario id',
+    description: 'Browser test id',
+  })
+  @Post('/runtest/:id')
+  async runBrowserTestById(@GetUser() user: User, @Param('id') id: string) {
+    return this.floodTestJobService.runBrowserTest(user, id);
+  }
+
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+        interval: {
+          type: 'string',
+        },
+        type: {
+          type: 'string',
+        },
+        testScript: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Run browser test using test script',
+  })
+  @UseInterceptors(
+    FileInterceptor('testFile', {
+      dest: '/testScripts',
+      preservePath: true,
+      limits: {
+        fileSize: Constants.MaxSizeInBytes,
+      },
+      fileFilter: function(req, file, cb) {
+        if (!file.originalname.match(/\.(ts)$/)) {
+          return cb(
+            new Error('File upload error, only ts files are allowed.'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  @Post('/runtest')
+  async runBrowserTestByScript(
+    @GetUser() user: User,
+    @UploadedFile() testFileDto: TestFileDto,
+  ) {}
+  //#endregion
+
+  //#region Download Browser Test script
+  @ApiOperation({
+    summary: 'Downloads the browser test script',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Browser test id',
   })
   @Get('/downloadtest/:id')
   downloadTest(@GetUser() user: User, @Param('id') id: string) {
@@ -244,14 +308,14 @@ export class FloodtestController {
   }
   //#endregion
 
-  //#region Get all Flood Test results
+  //#region Get all Browser Test results
   @ApiOperation({
-    summary: 'Returns the test run results of specified Flood Element test',
+    summary: 'Returns the test run results of specified browser test',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'Flood Element test scenario id',
+    description: 'Browser test id',
   })
   @ApiOkResponse({
     description: 'All the test run results',

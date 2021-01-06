@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FloodTest } from '../repositories/schemas/flood-test.schema';
@@ -25,22 +30,10 @@ export class FloodtestService {
     private floodTestResultSummaryModel: Model<FloodTestResultSummary>,
     private readonly agendaService: AgendaService,
     private readonly fileService: FileService,
-  ) {
-    // //setup job service
-    // agendaService.setup();
-    // //redefine all agenda jobs
-    // this.findAllIds().then(floodTestIds => {
-    //   //re-define all agenda jobs here
-    //   floodTestIds.forEach(floodTestId => {
-    //     agendaService.defineJob(floodTestId);
-    //   });
-    //   //start job service
-    //   agendaService.start();
-    // });
-  }
+  ) {}
 
   /**
-   * Creates a Flood Element test
+   * Creates a browser test
    * @param user the user entity
    * @param createFloodTestDto entity used to create a Flood Element test document
    * @param testFileDto entity that specifies the Flood Element test script
@@ -148,10 +141,25 @@ export class FloodtestService {
   }
 
   /**
+   * Checks if user is the creator of the specified test
+   * @param user the user entity
+   * @param id the test id
+   */
+  async allowOrThrow(user: User, id: string) {
+    const isCreator = await this.floodTestRepository.isCreator(user, id);
+    if (!isCreator) {
+      throw new UnauthorizedException(
+        `User with id ${user.id} is not creator of test with id ${id}`,
+      );
+    }
+  }
+
+  /**
    * Downloads the Flood Element test script with the specified id
    * @param id id of Flood Element test
    */
   async downloadTestScript(user: User, id: string): Promise<string> {
+    await this.allowOrThrow(user, id);
     return this.fileService.downloadFile(id);
   }
 

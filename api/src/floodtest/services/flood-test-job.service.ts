@@ -12,6 +12,8 @@ import { TestResultDto } from '../dtos/test-result.dto';
 import { Keys } from '../../constants/keys';
 import { TestType } from '../../common/enums/test-types.enum';
 import { BrowserTestSettings } from '../dtos/browser-test-settings.dto';
+import { User } from 'src/auth/repositories/schemas/user.schema';
+import { ApiTestResultDto } from '../dtos/api-test-result.dto';
 
 @Injectable()
 export class FloodTestJobService {
@@ -44,10 +46,20 @@ export class FloodTestJobService {
   }
 
   /**
+   * Runs browser test initiated via API
+   * @param user the user entity
+   * @param id the test id
+   */
+  async runBrowserTest(user: User, id: string): Promise<ApiTestResultDto> {
+    await this.floodTestService.allowOrThrow(user, id);
+    return await this.startBrowserTestRun(id);
+  }
+
+  /**
    * Function that creates runs browser test using SandboxRunner API.
    * This function will be executed every time a new test is scheduled
    */
-  startBrowserTestRun = async (testId: string) => {
+  startBrowserTestRun = async (testId: string): Promise<ApiTestResultDto> => {
     this._logger.log(`Starting browser test, id: ${testId}`);
 
     //find associated test to get test type (could be improved by sending type in message)
@@ -100,7 +112,14 @@ export class FloodTestJobService {
         testSettings,
       );
 
-      await this.processTestResult(testResult);
+      const screenShotUris = await this.processTestResult(testResult);
+
+      const { systemLogs, ...testResultFields } = testResult;
+      const apiTestResult: ApiTestResultDto = {
+        screenShotUris,
+        ...testResultFields,
+      };
+      return apiTestResult;
     } catch (err) {
       this._logger.error(err);
     }
@@ -111,7 +130,9 @@ export class FloodTestJobService {
    * run completed by the FloodElement-SandboxRunner API.
    * This function will be executed when the browser test run has completed.
    */
-  processTestResult = async (testResultDto: TestResultDto) => {
+  processTestResult = async (
+    testResultDto: TestResultDto,
+  ): Promise<string[]> => {
     this._logger.log(
       `Processing browser test run result, test result: ${testResultDto}`,
     );
@@ -144,7 +165,7 @@ export class FloodTestJobService {
       `Saved test summary with id: ${testSummary._id} and run name: ${testSummary.testRunName}`,
     );
 
-    //update test
+    //update test summary
     var testUpdate = {
       $set: {
         'resultOverview.isPassing': testResultDto.isSuccessful,
@@ -159,5 +180,7 @@ export class FloodTestJobService {
     this._logger.log(
       `Saved test with id: ${floodTest._id} and run name: ${testSummary.testRunName}`,
     );
+
+    return testResults.screenShotUris;
   };
 }
