@@ -26,6 +26,7 @@ async function bootstrap() {
 
   await app.listen(Keys.serverPort);
   const appUrl = await app.getUrl();
+
   logger.debug(`Application is running on: ${appUrl}`);
   logger.debug(`Swagger UI running on: ${appUrl}/swagger`);
 

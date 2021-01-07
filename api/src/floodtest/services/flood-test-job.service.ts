@@ -12,7 +12,13 @@ import { TestResultDto } from '../dtos/test-result.dto';
 import { Keys } from '../../constants/keys';
 import { TestType } from '../../common/enums/test-types.enum';
 import { BrowserTestSettings } from '../dtos/browser-test-settings.dto';
+import { User } from 'src/auth/repositories/schemas/user.schema';
+import { ApiTestResultDto } from '../dtos/api-test-result.dto';
 
+interface TestUris {
+  screenShotUris: string[];
+  logFileUris: string[];
+}
 @Injectable()
 export class FloodTestJobService {
   private _logger = new Logger('FloodTestJobService');
@@ -44,23 +50,44 @@ export class FloodTestJobService {
   }
 
   /**
-   * Function that creates runs browser test using SandboxRunner API.
-   * This function will be executed every time a new test is scheduled
+   * Runs scheduled browser test initiated via API
+   * @param user the user entity
+   * @param id the test id
    */
-  startBrowserTestRun = async (testId: string) => {
-    this._logger.log(`Starting browser test, id: ${testId}`);
+  async runScheduledBrowserTest(
+    user: User,
+    id: string,
+  ): Promise<ApiTestResultDto> {
+    await this.floodTestService.allowOrThrow(user, id);
+    return await this.startBrowserTestRun(id);
+  }
 
-    //find associated test to get test type (could be improved by sending type in message)
-    const testType = (await this.floodTestModel.findById(testId)).type;
+  /**
+   * Runs an unscheduled browser test initiated via API
+   * @param user the user entity
+   * @param id the test id
+   */
+  async runUnscheduledBrowserTest(
+    id: string,
+    testType: TestType,
+    testRunName: string,
+  ): Promise<ApiTestResultDto> {
+    return await this.startBrowserTestRun(id, testType, testRunName, false);
+  }
 
-    //create a test summary object
+  /**
+   * Saves a browser test summary and returns the testRunName
+   * @param id the id of the test
+   * @param testType the type of test being run
+   */
+  async saveTestSummary(id: string, testType: TestType): Promise<string> {
     const runOn = moment.utc();
     const testRunName = runOn.format('YYYY-MM-DDTH:mmZ');
     const runOnDate = runOn.toDate();
     let createdFloodTestSummary: FloodTestResultSummary;
     try {
       createdFloodTestSummary = new this.floodTestResultSummaryModel({
-        testId: testId,
+        testId: id,
         testRunName: testRunName,
         isCompleted: null,
         executionTimeInSeconds: -1,
@@ -76,31 +103,85 @@ export class FloodTestJobService {
       this._logger.error(err);
     }
 
+    return testRunName;
+  }
+
+  /**
+   * Create the browser test settings object
+   * @param id the id of the test
+   * @param testType the type of test being run
+   */
+  createTestSettings(
+    id: string,
+    testType: TestType,
+    testRunName: string,
+  ): BrowserTestSettings {
+    const testSettings: BrowserTestSettings = {
+      isDevelopment: false,
+      testSettings: {
+        id: id,
+        type: testType,
+        maximumRetries: Keys.flood_maxRetries,
+        maximumAllowedScreenshots: Keys.flood_maximumAllowedScreenshots,
+      },
+      azureStorage: {
+        uploadResults: true,
+        accountName: Keys.azureStorage_AccountName,
+        accountAccessKey: Keys.azureStorage_AccessKey,
+        containerFolderName: testRunName,
+      },
+    };
+
+    return testSettings;
+  }
+
+  /**
+   * Function that creates runs browser test using SandboxRunner API.
+   * This function will be executed every time a new test is scheduled
+   */
+  startBrowserTestRun = async (
+    testId: string,
+    testType: TestType = null,
+    testRunName: string = null,
+    persistResults: boolean = true,
+  ): Promise<ApiTestResultDto> => {
+    this._logger.log(`Starting browser test, id: ${testId}`);
+
+    //find associated test to get test type (could be improved by sending type in message)
+    if (!testType) {
+      testType = (await this.floodTestModel.findById(testId)).type;
+    }
+
+    //create a test summary object
+    if (!testRunName) {
+      testRunName = await this.saveTestSummary(testId, testType);
+    }
+
     this._logger.log(
       `Invoking SandboxRunner, test id: ${testId}, test run: ${testRunName}`,
     );
     try {
-      const testSettings: BrowserTestSettings = {
-        isDevelopment: false,
-        testSettings: {
-          id: testId,
-          type: testType,
-          maximumRetries: Keys.flood_maxRetries,
-          maximumAllowedScreenshots: Keys.flood_maximumAllowedScreenshots,
-        },
-        azureStorage: {
-          uploadResults: true,
-          accountName: Keys.azureStorage_AccountName,
-          accountAccessKey: Keys.azureStorage_AccessKey,
-          containerFolderName: testRunName,
-        },
-      };
+      const testSettings = this.createTestSettings(
+        testId,
+        testType,
+        testRunName,
+      );
 
       var testResult = await this.sandboxRunnerService.runBrowserTest(
         testSettings,
       );
 
-      await this.processTestResult(testResult);
+      const screenShotUris = await this.processTestResult(
+        testResult,
+        persistResults,
+      );
+
+      const { systemLogs, ...testResultFields } = testResult;
+      const apiTestResult: ApiTestResultDto = {
+        screenShotUris,
+        ...testResultFields,
+      };
+      return apiTestResult;
     } catch (err) {
       this._logger.error(err);
     }
@@ -111,16 +192,30 @@ export class FloodTestJobService {
    * run completed by the FloodElement-SandboxRunner API.
    * This function will be executed when the browser test run has completed.
    */
-  processTestResult = async (testResultDto: TestResultDto) => {
+  processTestResult = async (
+    testResultDto: TestResultDto,
+    persistResults: boolean = true,
+  ): Promise<string[]> => {
     this._logger.log(
       `Processing browser test run result, test result: ${testResultDto}`,
     );
 
-    //generate test result urls
-    var testResults = await this.fileService.getTestResults(
+    //generate test result uri's
+    var testResults: TestUris = await this.fileService.getTestResults(
       testResultDto.testId,
       testResultDto.testRunName,
     );
+
+    if (persistResults) {
+      await this.updateTestSummary(testResultDto, testResults);
+
+      await this.updateTestOverview(testResultDto);
+    }
+
+    return testResults.screenShotUris;
+  };
+
+  async updateTestSummary(testResultDto: TestResultDto, testResults: TestUris) {
     //update test summary model
     var testSummaryQuery = {
       testId: testResultDto.testId,
@@ -143,8 +238,9 @@ export class FloodTestJobService {
     this._logger.log(
       `Saved test summary with id: ${testSummary._id} and run name: ${testSummary.testRunName}`,
     );
+  }
 
-    //update test
+  async updateTestOverview(testResultDto: TestResultDto) {
     var testUpdate = {
       $set: {
         'resultOverview.isPassing': testResultDto.isSuccessful,
@@ -157,7 +253,7 @@ export class FloodTestJobService {
       testUpdate,
     );
     this._logger.log(
-      `Saved test with id: ${floodTest._id} and run name: ${testSummary.testRunName}`,
+      `Saved test with id: ${floodTest._id} and run name: ${testResultDto.testRunName}`,
     );
-  };
+  }
 }

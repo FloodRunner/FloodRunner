@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FloodTest } from '../repositories/schemas/flood-test.schema';
@@ -25,22 +30,42 @@ export class FloodtestService {
     private floodTestResultSummaryModel: Model<FloodTestResultSummary>,
     private readonly agendaService: AgendaService,
     private readonly fileService: FileService,
-  ) {
-    // //setup job service
-    // agendaService.setup();
-    // //redefine all agenda jobs
-    // this.findAllIds().then(floodTestIds => {
-    //   //re-define all agenda jobs here
-    //   floodTestIds.forEach(floodTestId => {
-    //     agendaService.defineJob(floodTestId);
-    //   });
-    //   //start job service
-    //   agendaService.start();
-    // });
+  ) {}
+
+  /**
+   * Uploads either the testScript or the testFile that was provided
+   * @param testId the id of the test
+   * @param createFloodTestDto the createFloodTestDto object with all the settings of the test
+   * @param testFileDto the uploaded test file
+   */
+  async uploadTest(
+    testId: string,
+    createFloodTestDto: CreateFloodTestDto,
+    testFileDto: TestFileDto,
+  ): Promise<string> {
+    //convert supplied script to a file
+    let testUri = null;
+    if (!!createFloodTestDto.testScript) {
+      testUri = await this.fileService.uploadFile(
+        testId,
+        createFloodTestDto.testScript,
+      );
+    } else {
+      testUri = await this.fileService.uploadFile(testId, testFileDto);
+    }
+
+    return testUri;
   }
 
   /**
-   * Creates a Flood Element test
+   * Creates a test id
+   */
+  createTestId(): string {
+    return new mongoose.Types.ObjectId().toHexString();
+  }
+
+  /**
+   * Creates a browser test
    * @param user the user entity
    * @param createFloodTestDto entity used to create a Flood Element test document
    * @param testFileDto entity that specifies the Flood Element test script
@@ -60,19 +85,15 @@ export class FloodtestService {
       );
     }
 
-    const testId = new mongoose.Types.ObjectId().toHexString();
+    const testId = this.createTestId();
+
     this._logger.log(`Test id generated: ${testId}`);
 
-    //convert supplied script to a file
-    let testUri = null;
-    if (!!createFloodTestDto.testScript) {
-      testUri = await this.fileService.uploadFile(
-        testId,
-        createFloodTestDto.testScript,
-      );
-    } else {
-      testUri = await this.fileService.uploadFile(testId, testFileDto);
-    }
+    const testUri = await this.uploadTest(
+      testId,
+      createFloodTestDto,
+      testFileDto,
+    );
 
     const createdFloodTest = await this.floodTestRepository.create(
       testId,
@@ -148,10 +169,25 @@ export class FloodtestService {
   }
 
   /**
+   * Checks if user is the creator of the specified test
+   * @param user the user entity
+   * @param id the test id
+   */
+  async allowOrThrow(user: User, id: string) {
+    const isCreator = await this.floodTestRepository.isCreator(user, id);
+    if (!isCreator) {
+      throw new UnauthorizedException(
+        `User with id ${user.id} is not creator of test with id ${id}`,
+      );
+    }
+  }
+
+  /**
    * Downloads the Flood Element test script with the specified id
    * @param id id of Flood Element test
    */
   async downloadTestScript(user: User, id: string): Promise<string> {
+    await this.allowOrThrow(user, id);
     return this.fileService.downloadFile(id);
   }
 

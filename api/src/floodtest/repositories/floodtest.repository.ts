@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FloodTest } from './schemas/flood-test.schema';
 import { Model } from 'mongoose';
@@ -82,5 +82,22 @@ export class FloodTestRepository {
     })) as deleteResult;
 
     return deleteResult.ok ? true : false;
+  }
+
+  async isCreator(user: User, id: string): Promise<boolean> {
+    this._logger.debug(`Searching for test with id: ${id}`);
+
+    try {
+      const test = await this.floodTestModel.findOne({
+        _id: id,
+      });
+
+      return test.userId == user.id;
+    } catch (err) {
+      this._logger.error(`Test with id: ${id} was not found`);
+      throw new NotFoundException(
+        `Specified test with id: ${id} does not exist.`,
+      );
+    }
   }
 }
