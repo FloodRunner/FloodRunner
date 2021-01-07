@@ -33,6 +33,38 @@ export class FloodtestService {
   ) {}
 
   /**
+   * Uploads either the testScript or the testFile that was provided
+   * @param testId the id of the test
+   * @param createFloodTestDto the createFloodTestDto object with all the settings of the test
+   * @param testFileDto the uploaded test file
+   */
+  async uploadTest(
+    testId: string,
+    createFloodTestDto: CreateFloodTestDto,
+    testFileDto: TestFileDto,
+  ): Promise<string> {
+    //convert supplied script to a file
+    let testUri = null;
+    if (!!createFloodTestDto.testScript) {
+      testUri = await this.fileService.uploadFile(
+        testId,
+        createFloodTestDto.testScript,
+      );
+    } else {
+      testUri = await this.fileService.uploadFile(testId, testFileDto);
+    }
+
+    return testUri;
+  }
+
+  /**
+   * Creates a test id
+   */
+  createTestId(): string {
+    return new mongoose.Types.ObjectId().toHexString();
+  }
+
+  /**
    * Creates a browser test
    * @param user the user entity
    * @param createFloodTestDto entity used to create a Flood Element test document
@@ -53,19 +85,15 @@ export class FloodtestService {
       );
     }
 
-    const testId = new mongoose.Types.ObjectId().toHexString();
+    const testId = this.createTestId();
+
     this._logger.log(`Test id generated: ${testId}`);
 
-    //convert supplied script to a file
-    let testUri = null;
-    if (!!createFloodTestDto.testScript) {
-      testUri = await this.fileService.uploadFile(
-        testId,
-        createFloodTestDto.testScript,
-      );
-    } else {
-      testUri = await this.fileService.uploadFile(testId, testFileDto);
-    }
+    const testUri = await this.uploadTest(
+      testId,
+      createFloodTestDto,
+      testFileDto,
+    );
 
     const createdFloodTest = await this.floodTestRepository.create(
       testId,

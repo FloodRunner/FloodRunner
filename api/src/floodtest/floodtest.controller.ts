@@ -238,7 +238,7 @@ export class FloodtestController {
   })
   @Post('/runtest/:id')
   async runBrowserTestById(@GetUser() user: User, @Param('id') id: string) {
-    return this.floodTestJobService.runBrowserTest(user, id);
+    return this.floodTestJobService.runScheduledBrowserTest(user, id);
   }
 
   @ApiConsumes('multipart/form-data')
@@ -254,6 +254,8 @@ export class FloodtestController {
         },
         interval: {
           type: 'string',
+          description:
+            'Ignored for this call as this test will not run on a schedule. Use Create endpoint for creating a scheduled browser test.',
         },
         type: {
           type: 'string',
@@ -289,8 +291,27 @@ export class FloodtestController {
   @Post('/runtest')
   async runBrowserTestByScript(
     @GetUser() user: User,
+    @Body(ValidationPipe) createFloodTestDto: CreateFloodTestDto,
     @UploadedFile() testFileDto: TestFileDto,
-  ) {}
+  ) {
+    if (!!!testFileDto && !!!createFloodTestDto.testScript) {
+      const errorMessage = `No test file or script supplied. Please supply a test file or script`;
+      this._logger.error(errorMessage);
+      throw new BadRequestException(errorMessage);
+    }
+
+    const testId = this.floodTestService.createTestId();
+    await this.floodTestService.uploadTest(
+      testId,
+      createFloodTestDto,
+      testFileDto,
+    );
+    return this.floodTestJobService.runUnscheduledBrowserTest(
+      testId,
+      createFloodTestDto.type,
+      testId,
+    );
+  }
   //#endregion
 
   //#region Download Browser Test script

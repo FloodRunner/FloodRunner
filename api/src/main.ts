@@ -3,14 +3,12 @@ import { AppModule } from './app.module';
 import { Keys } from './constants/keys';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { HttpExceptionFilter } from './common/filters/http-exceptions.filter';
 
 declare const module: any;
 
 async function bootstrap() {
   const logger = new Logger('bootstrap');
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new HttpExceptionFilter());
 
   //setup swagger
   const options = new DocumentBuilder()
