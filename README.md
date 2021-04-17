@@ -182,7 +182,7 @@ If you're interested to learn more about FloodRunner then check out these blog p
 
 ## Contributing
 
-If you've enjoyed or even hated using this project please let me know throught a pull requests or just open an issue.
+If you've enjoyed using this project, or have an suggestions on making this project better please open a pull requests or issue.
 
 ## Reporting Issues
 
